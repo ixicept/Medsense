@@ -14,13 +14,13 @@
 
 #### Frontend
 ```bash
-cd ./FrontEnd\ -\ Medsense/
+cd "./FrontEnd - Medsense"
 npm install       # Install dependencies
 npm run dev      # Start development server
 ```
 
 #### Backend
 ```bash
-cd ./BackEnd\ -\ Medsense/
+cd "./BackEnd - Medsense"
 go run main.go
 ```
