@@ -1,34 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from "react-router"
+import HomePage from "./pages/HomePage"
+import AppointmentPage from "./pages/AppointmentPage"
+import HistoryPage from "./pages/HistoryPage"
+import LoginPage from "./pages/LoginPage"
+import AuthGuard from "./components/AuthGuard"
+import MainNav from "./components/MainNav"
+import { useLocation } from "react-router"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/";
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Ini perubahan dari branch</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="min-h-screen bg-sky-50">
+      <AuthGuard>
+        {/* Show MainNav only when not on login page */}
+        {!isLoginPage && <MainNav />}
+        
+        <Routes>
+          <Route path="/" element={<LoginPage/>}/>
+          <Route path="/home-page" element={<HomePage />} />
+          <Route path="/appointment" element={<AppointmentPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+        </Routes>
+      </AuthGuard>
+    </div>
   )
 }
 
