@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"main/application/dto"
 	"main/domain/auth"
 
 	"github.com/gin-gonic/gin"
@@ -17,22 +19,42 @@ func NewAuthHandler(authService auth.Service) *AuthHandler {
 }
 
 func (h *AuthHandler) CreateAccount(ctx *gin.Context) {
-	var request struct {
-		Email    string `json:"email" binding:"required,email"`
-		Password string `json:"password" binding:"required,min=8"`
-		Role     string `json:"role" binding:"required,oneof=admin doctor patient"`
-	}
 
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	var req dto.CreateUserDTO
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
 
-	accountID, err := h.AuthService.CreateAccount(request.Email, request.Password, request.Role)
+	accountID, err := h.AuthService.CreateAccount(req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": "Failed to create account"})
 		return
 	}
 
 	ctx.JSON(201, gin.H{"account_id": accountID})
+}
+
+func (h *AuthHandler) Login(ctx *gin.Context) {
+	var request struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(400, gin.H{"error": "Invalid input"})
+		return
+	}
+	
+	fmt.Println(request)
+
+
+	account, err := h.AuthService.Login(request.Email, request.Password)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Login failed"})
+		return
+	}
+
+	ctx.JSON(200, account)
 }

@@ -1,4 +1,4 @@
-package http
+package interfaces
 
 import (
 	"main/interfaces/http/handler"
@@ -21,7 +21,8 @@ func NewRouter(db *gorm.DB, authHandler handler.AuthHandler) *gin.Engine {
 
 	api := router.Group("/api")
 	{
-		api.POST("auth/create-account", authHandler.CreateAccount)
+		api.POST("auth/register-patient", authHandler.CreateAccount)
+		api.POST("auth/login", authHandler.Login)
 		// protected := router.Group("/api")
 		// // protected.Use(authMiddleware(db))
 		// {

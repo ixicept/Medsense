@@ -1,7 +1,7 @@
 package auth
 
 type AccountRepository interface {
-	CreateAccount(email, password string) (string, error)
-	FindByEmail(email string) (string, error)
-	FindByID(id string) (string, error)
+	CreateAccount(Account) (string, error)
+	FindByEmail(email string) (Account, error)
+	FindByID(id string) (Account, error)
 }

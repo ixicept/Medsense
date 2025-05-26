@@ -6,6 +6,7 @@ import { DocumentUpload } from "../components/DocumentUpload";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Make sure this is imported
 import { Calendar } from "../components/Icons";
+import { register } from "../services/AuthService";
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -115,20 +116,24 @@ export default function RegisterPage() {
       // Send to backend - make sure to send the FormData properly
     //   const response = await axios.post("http://localhost:3001/register", { body: apiFormData
     //   });
-    const response = await axios.post("http://localhost:3001/register", apiFormData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
+
+    if (activeTab === "doctor") {
+      // const response = await registerDoctor(apiFormData);
+      // if (response.data) {
+      //   toast.success("Registration submitted! An admin will review your application.");
+      //   nav("/");
+      // }
+    }
+    else if (activeTab === "patient") {
+      const response = await register(apiFormData);
 
       if (response.data) {
-        toast.success(
-          activeTab === "doctor"
-            ? "Registration submitted! An admin will review your application."
-            : "Registration successful! You can now log in."
-        );
+        toast.success("Registration successful! You can now log in.");
         nav("/");
       }
+    
+    }
+      
     } catch (error) {
       console.error("Registration error:", error);
       toast.error("Registration failed. Please try again.");
