@@ -82,7 +82,7 @@ export default function AppointmentPage() {
                     <MapPin className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-sm text-sky-800">123 Medical Center Drive, Suite 200</p>
+                    <p className="text-sm text-sky-800">RS Silaom, Jakarta Barat </p>
                   </div>
                 </div>
               </div>

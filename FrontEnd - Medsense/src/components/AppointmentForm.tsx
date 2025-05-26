@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useState } from "react"
@@ -7,17 +5,17 @@ import { toast } from "react-toastify"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { Check, Calendar } from "./Icons"
+import { getCurrentUser } from "../utils/auth"
 
 export default function AppointmentForm() {
   const [date, setDate] = useState<Date | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
     doctor: "",
     reason: "",
   })
+
+  const user = getCurrentUser()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -26,7 +24,11 @@ export default function AppointmentForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // In a real app, this would send the data to a backend API
+
+    const data = localStorage.getItem("user");
+
+    JSON.stringify(data)
+
     console.log("Appointment data:", { ...formData, date })
     setSubmitted(true)
 
@@ -43,7 +45,7 @@ export default function AppointmentForm() {
         <div>
           <h3 className="font-medium text-green-800">Appointment Scheduled</h3>
           <p className="text-sm text-green-700">
-            Your appointment has been successfully scheduled. We've sent a confirmation email to {formData.email}.
+            Your appointment has been successfully scheduled. We've sent a confirmation email to {user?.email}.
           </p>
         </div>
       </div>
@@ -53,55 +55,6 @@ export default function AppointmentForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label htmlFor="name" className="block text-sm font-medium text-sky-700">
-            Full Name
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            placeholder="John Doe"
-            required
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full rounded-md border border-sky-200 p-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 outline-none"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label htmlFor="email" className="block text-sm font-medium text-sky-700">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="john@example.com"
-            required
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full rounded-md border border-sky-200 p-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 outline-none"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label htmlFor="phone" className="block text-sm font-medium text-sky-700">
-            Phone Number
-          </label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            placeholder="(123) 456-7890"
-            required
-            value={formData.phone}
-            onChange={handleChange}
-            className="w-full rounded-md border border-sky-200 p-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 outline-none"
-          />
-        </div>
 
         <div className="space-y-2">
           <label htmlFor="doctor" className="block text-sm font-medium text-sky-700">

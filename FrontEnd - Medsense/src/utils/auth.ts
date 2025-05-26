@@ -3,11 +3,12 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  role: string;
 }
 
 // Function to get the current logged-in user from session storage
 export function getCurrentUser(): User | null {
-  const userJson = sessionStorage.getItem('currentUser');
+  const userJson = sessionStorage.getItem('user');
   if (!userJson) {
     return null;
   }

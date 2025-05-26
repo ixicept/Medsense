@@ -1,22 +1,27 @@
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router";
-import { isLoggedIn } from "../utils/auth";
+import { ReactNode, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 
 interface AuthGuardProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function AuthGuard({ children }: AuthGuardProps) {
   const navigate = useNavigate();
   const location = useLocation();
-
+  
+  // Public routes that don't need authentication
+  const publicRoutes = ['/', '/register'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
+  
   useEffect(() => {
-    // Check if user is logged in
-    if (!isLoggedIn() && location.pathname !== "/") {
-      // If not logged in and not on login page, redirect to login page
-      navigate("/");
+    // Only check auth for protected routes
+    if (!isPublicRoute) {
+      const user = sessionStorage.getItem('user');
+      if (!user) {
+        navigate('/', { replace: true });
+      }
     }
-  }, [location.pathname, navigate]);
-
+  }, [navigate, location.pathname, isPublicRoute]);
+  
   return <>{children}</>;
 }

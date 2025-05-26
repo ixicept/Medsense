@@ -7,12 +7,13 @@ interface User {
   name: string;
   email: string;
   password: string;
+  role: string;
 }
 
 export default function LoginPage(){
 
     const nav = useNavigate()
-    const [email, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loginError, setLoginError] = useState("");
     
@@ -29,16 +30,18 @@ export default function LoginPage(){
             (user: User) => user.name === email || user.email === email
         );
         
+        console.log("Found user:", user);
+
         if (user && user.password === password) {
-            // Create a user object without sensitive data like password
+            
             const userToStore = {
                 id: user.id,
                 name: user.name,
-                email: user.email
+                email: user.email, 
+                role: user.role
             };
             
-            // Store user data in sessionStorage
-            sessionStorage.setItem('currentUser', JSON.stringify(userToStore));
+            sessionStorage.setItem('user', JSON.stringify(userToStore));
             console.log("Login successful for user:", user);
             nav("/home-page");
         } else {
@@ -54,8 +57,12 @@ export default function LoginPage(){
         setIsLoading(true);
         axios.get("http://localhost:3001/users")
             .then(res => {
-                setUsers(res.data);
-                console.log("Fetched users:", res.data);
+                if (res.data && res.data.length > 0) {
+                    setUsers(res.data);
+                    console.log("Fetched users:", res.data);
+                } else {
+                    console.warn("No users found in the response");
+                }
                 setIsLoading(false);
             })
             .catch(err => {
@@ -78,7 +85,7 @@ export default function LoginPage(){
                         name="email" 
                         id="email" 
                         value={email}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                     <br />
                     <label htmlFor="password" className="text-sky-900 font-medium">Password</label>
@@ -104,8 +111,20 @@ export default function LoginPage(){
                             {isLoading ? "Loading..." : "Login"}
                         </button>
                     </div>
+                    <div className="mt-6 text-center text-sm text-gray-600">
+                        Don't have an account?{" "}
+                        <button
+                            onClick={() => nav("/register")}
+                            className="text-sky-500 hover:text-sky-500 font-medium"
+                        >
+                            Register Now
+                        </button>
+                    </div>
                 </div>    
             </div>
+
+            {/* Tutorial pengunaan app */}
+
         </>
     )
 }
