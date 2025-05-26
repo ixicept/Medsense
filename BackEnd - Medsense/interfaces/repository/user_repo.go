@@ -15,19 +15,15 @@ func NewAuthRepository(db *gorm.DB) auth.AccountRepository {
 }
 
 func (r *UserRepository) CreateAccount(email, password string) (string, error) {
-	// Implementation for creating an account
-	// This should include hashing the password and saving the account to the database
-	return "", nil // Replace with actual implementation
+	return "", nil 
 }
 
 func (r *UserRepository) FindByEmail(email string) (string, error) {
-	// Implementation for retrieving an account by email
-	// This should query the database for the account with the given email
-	return "", nil // Replace with actual implementation
+
+	return "", nil 
 }
 
 func (r *UserRepository) FindByID(id string) (string, error) {
-	// Implementation for retrieving an account by ID
-	// This should query the database for the account with the given ID
-	return "", nil // Replace with actual implementation
+
+	return "", nil 
 }
