@@ -1,4 +1,4 @@
-package main
+package infrastructure
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ const (
 	port     = 5432
 	username = "postgres"  //ini user db kalian
 	password = "philip168" //ini password db kalian
-	dbname   = "Medsense" //ini nama db kalian
+	dbname   = "Medsense"  //ini nama db kalian
 )
 
 func ConnectionDatabase() *gorm.DB {
