@@ -1,0 +1,30 @@
+networks:
+  medsense_network:
+
+volumes:
+  medsense_db:
+services:
+  postgres:
+    image: postgres:17.4
+    container_name: medsense_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: medsense_db
+    volumes:
+      - medsense_db:/var/lib/postgresql/data
+    ports:
+      - "5436:5432"
+    networks:
+      - medsense_network
+  flask:
+    build:
+      context: ./BackEnd - Medsense/domain/model/flask
+      dockerfile: Dockerfile
+    container_name: medsense_flask
+    restart: on-failure
+    networks:
+      - medsense_network
+    ports:
+      - "5000:5000"
