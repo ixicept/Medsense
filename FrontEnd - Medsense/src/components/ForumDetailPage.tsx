@@ -4,10 +4,11 @@ import { useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
 import { getCurrentUser } from "../utils/auth";
 import { ArrowLeft } from "../components/Icons";
+import { createForumReply, getForumPostDetails, getForumReplies } from "../services/ForumService";
 
 interface ForumPost {
-  forum_id: number;
-  user_id: number;
+  forum_id: string;
+  user_id: string;
   status: string;
   forum_title: string;
   created_at: string;
@@ -15,9 +16,9 @@ interface ForumPost {
 }
 
 interface ForumReply {
-  reply_id: number;
-  forum_id: number;
-  user_id: number;
+  reply_id: string;
+  forum_id: string;
+  user_id: string;
   reply_message: string;
   created_at?: string;
   user_name: string;
@@ -27,25 +28,34 @@ export default function ForumDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
-  
+
   const [forum, setForum] = useState<ForumPost | null>(null);
   const [replies, setReplies] = useState<ForumReply[]>([]);
   const [loading, setLoading] = useState(true);
   const [replyContent, setReplyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   useEffect(() => {
     if (id) {
       fetchForumDetails();
       fetchForumReplies();
     }
   }, [id]);
-  
+
   const fetchForumDetails = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:3001/forum-posts/${id}`);
-      setForum(response.data);
+      const response = await getForumPostDetails(id ? id : "");
+      const newResponse = {
+        forum_id: response.ID,
+        user_id: response.AuthorID,
+        status: response.Status,
+        forum_title: response.Title,
+        created_at: response.CreatedAt,
+        user_name: response.AuthorName
+      }
+
+      setForum(newResponse);
     } catch (error) {
       console.error("Error fetching forum details:", error);
       toast.error("Failed to load forum details");
@@ -54,38 +64,58 @@ export default function ForumDetailPage() {
       setLoading(false);
     }
   };
-  
+
   const fetchForumReplies = async () => {
+    if (!id) {
+      setReplies([]);
+      return;
+    }
     try {
-      const response = await axios.get(`http://localhost:3001/forum-posts/${id}/replies`);
-      setReplies(response.data);
+      const rawReplies = await getForumReplies(id);
+
+      if (Array.isArray(rawReplies)) {
+        const formattedReplies: ForumReply[] = rawReplies.map((reply: any) => ({
+          reply_id: reply.ID,
+          forum_id: reply.ForumPostID,
+          user_id: reply.AuthorID,
+          reply_message: reply.ReplyMessage,
+          created_at: reply.CreatedAt, 
+          user_name: reply.AuthorName
+        }));
+        setReplies(formattedReplies);
+      } else {
+        setReplies([]);
+      }
     } catch (error) {
       console.error("Error fetching forum replies:", error);
       toast.error("Failed to load replies");
+      setReplies([]);
     }
   };
-  
+
   const handleSubmitReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!replyContent.trim()) {
       toast.error("Reply content cannot be empty");
       return;
     }
-    
+
     if (!currentUser) {
       toast.error("You must be logged in to reply");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      await axios.post(`http://localhost:3001/forum-posts/${id}/replies`, {
-        user_id: currentUser.id,
-        reply_message: replyContent
-      });
-      
+      await createForumReply(
+        id ? id : "",
+        currentUser.id,
+        currentUser.name,
+        replyContent
+      );
+
       toast.success("Reply posted successfully");
       setReplyContent("");
       fetchForumReplies(); // Refresh replies
@@ -96,17 +126,17 @@ export default function ForumDetailPage() {
       setIsSubmitting(false);
     }
   };
-  
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric', 
-      month: 'short', 
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
   };
-  
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center h-60">
@@ -117,7 +147,7 @@ export default function ForumDetailPage() {
       </div>
     );
   }
-  
+
   if (!forum) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -127,7 +157,7 @@ export default function ForumDetailPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <button
@@ -137,7 +167,7 @@ export default function ForumDetailPage() {
         <ArrowLeft className="h-4 w-4 mr-1" />
         Back to Forums
       </button>
-      
+
       <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-sky-100">
         <h1 className="text-2xl font-bold text-sky-800 mb-4">{forum.forum_title}</h1>
         <div className="flex justify-between text-sm text-gray-500">
@@ -145,10 +175,10 @@ export default function ForumDetailPage() {
           <span>{formatDate(forum.created_at)}</span>
         </div>
       </div>
-      
+
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-sky-700 mb-4">Responses</h2>
-        
+
         {replies.length === 0 ? (
           <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 text-center">
             <p className="text-gray-500">No responses yet. Be the first to respond!</p>
@@ -167,7 +197,7 @@ export default function ForumDetailPage() {
           </div>
         )}
       </div>
-      
+
       <div className="bg-white rounded-lg shadow-md p-6 border border-sky-100">
         <h3 className="text-lg font-medium text-sky-700 mb-4">Leave a Response</h3>
         <form onSubmit={handleSubmitReply}>

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"main/application"
 	"main/domain/auth"
+	"main/domain/forum"
 	"main/infrastructure"
 	interfaces "main/interfaces/http"
 	"main/interfaces/http/handler"
@@ -11,6 +12,7 @@ import (
 	"net/http"
 
 	"github.com/gin-contrib/cors"
+	"github.com/go-playground/validator/v10"
 )
 
 func main() {
@@ -21,18 +23,22 @@ func main() {
 	db.AutoMigrate(
 		&auth.Account{},
 		&auth.DoctorRegistration{},
+		&forum.ForumPost{},
+		&forum.ForumReply{},
 	)
 
-	// validator := validator.New()
+	validator := validator.New()
 	// secretKey := "your_secret_key"
 
 	authRepo := repository.NewAuthRepository(db)
 	regisRepo := repository.NewDoctorRegistrationRepository(db)
+	forumRepo := repository.NewForumRepository(db)
 
 	// semesterRepo := semester.NewSemesterRepository(db)
 	// caseHeaderRepo := caseheader.NewCaseHeaderRepository(db)
 
 	authService := application.NewAuthService(authRepo, regisRepo)
+	forumService := application.NewForumService(forumRepo, validator)
 	// authService := services.NewAuthService(secretKey)
 	// albumService := services.NewAlbumService(albumRepo, trackRepo, validator)
 	// artistService := services.NewArtistService(artistRepo, userRepo, validator)
@@ -40,13 +46,14 @@ func main() {
 	// trackService := services.NewTrackService(albumRepo, trackRepo, validator)
 
 	authHandler := handler.NewAuthHandler(authService)
+	forumHandler := handler.NewForumHandler(forumService)
 
 	// albumController := controllers.NewAlbumController(albumService)
 	// artistController := controllers.NewArtistController(artistService)
 	// verificationController := controllers.NewVerificationRequestController(verificationService)
 	// trackController := controllers.NewTrackController(trackService)
 
-	r := interfaces.NewRouter(db, *authHandler)
+	r := interfaces.NewRouter(db, *authHandler, *forumHandler)
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8080", "http://localhost:6379"},

@@ -10,9 +10,9 @@ import (
 const (
 	host     = "localhost"
 	port     = 5432
-	username = "mm"       //ini user db kalian
-	password = "mm"       //ini password db kalian
-	dbname   = "postgres" //ini nama db kalian
+	username = "postgres"  //ini user db kalian
+	password = "philip168" //ini password db kalian
+	dbname   = "Medsense"  //ini nama db kalian
 )
 
 func ConnectionDatabase() *gorm.DB {

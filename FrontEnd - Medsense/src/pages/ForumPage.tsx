@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { getCurrentUser } from "../utils/auth";
 import { Plus } from "../components/Icons";
+import { createForumPost, getAllPosts } from "../services/ForumService";
 
 interface ForumPost {
-  forum_id: number;
-  user_id: number;
+  forum_id: string;
+  user_id: string;
   status: string;
   forum_title: string;
   created_at: string;
@@ -30,8 +30,16 @@ export default function ForumPage() {
   const fetchForumPosts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3001/forum-posts");
-      setForumPosts(response.data);
+      let response = await getAllPosts();
+      response = response.map((post: any) => ({
+        forum_id: post.ID,
+        user_id : post.AuthorID,
+        status : post.Status,
+        forum_title: post.Title,
+        created_at: post.CreatedAt,
+        user_name: post.AuthorName
+      }));
+      setForumPosts(response);
     } catch (error) {
       console.error("Error fetching forum posts:", error);
       toast.error("Failed to load forum posts");
@@ -56,16 +64,17 @@ export default function ForumPage() {
     setIsSubmitting(true);
     
     try {
-      await axios.post("http://localhost:3001/forum-posts", {
-        user_id: currentUser.id,
-        forum_title: newForumTitle,
-        status: "active"
-      });
+      await createForumPost(
+        currentUser.id,
+        currentUser.name,
+        newForumTitle,
+        "active"
+      );
       
       toast.success("Forum created successfully");
       setNewForumTitle("");
       setShowCreateModal(false);
-      fetchForumPosts(); // Refresh the list
+      fetchForumPosts();
     } catch (error) {
       console.error("Error creating forum:", error);
       toast.error("Failed to create forum");
