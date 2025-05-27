@@ -16,7 +16,7 @@ export const login = async (email: string, password: string) => {
 
 export const register = async (form: FormData) => {
   try {
-    var requestBody = {
+    const requestBody = {
       username: form.get("name"),
       email: form.get("email"),
       password: form.get("password"),

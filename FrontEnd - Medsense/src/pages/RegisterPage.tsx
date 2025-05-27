@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { DocumentUpload } from "../components/DocumentUpload";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Make sure this is imported
@@ -127,7 +126,9 @@ export default function RegisterPage() {
     else if (activeTab === "patient") {
       const response = await register(apiFormData);
 
-      if (response.data) {
+      console.log("Res: ", response)
+
+      if (response) {
         toast.success("Registration successful! You can now log in.");
         nav("/");
       }

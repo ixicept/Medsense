@@ -25,14 +25,16 @@ export default function LoginPage() {
             console.log("Login response:", user);
     
 
-            if (user && user.password === password) {
+            if (user != null ) {
 
                 const userToStore = {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role
+                    id: user.Id,
+                    name: user.Username,
+                    email: user.Email,
+                    role: user.Role
                 };
+
+                console.log("User data: ", userToStore)
 
                 sessionStorage.setItem('user', JSON.stringify(userToStore));
                 console.log("Login successful for user:", user);

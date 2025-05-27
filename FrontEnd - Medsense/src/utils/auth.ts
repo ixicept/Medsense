@@ -23,10 +23,10 @@ export function getCurrentUser(): User | null {
 
 // Function to check if a user is logged in
 export function isLoggedIn(): boolean {
-  return sessionStorage.getItem('currentUser') !== null;
+  return sessionStorage.getItem('user') !== null;
 }
 
 // Function to logout the current user
 export function logout(): void {
-  sessionStorage.removeItem('currentUser');
+  sessionStorage.removeItem('user');
 }
