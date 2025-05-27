@@ -7,8 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// --- Value Objects ---
-
 type AppointmentStatus string
 
 const (
@@ -41,18 +39,7 @@ func NewAppointmentRequest(
 	reason string,
 	patientNotes string,
 ) (*AppointmentRequest, error) {
-	if patientID == "" {
-		return nil, errors.New("patient ID cannot be empty")
-	}
-	if doctorID == "" {
-		return nil, errors.New("doctor ID cannot be empty")
-	}
-	if reason == "" {
-		return nil, errors.New("reason for appointment cannot be empty")
-	}
-	if requestedDateTime.Before(time.Now()) {
-		return nil, errors.New("requested appointment time cannot be in the past")
-	}
+	
 
 	now := time.Now().UTC()
 	return &AppointmentRequest{
