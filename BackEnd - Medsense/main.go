@@ -27,11 +27,12 @@ func main() {
 	// secretKey := "your_secret_key"
 
 	authRepo := repository.NewAuthRepository(db)
+	regisRepo := repository.NewDoctorRegistrationRepository(db)
 
 	// semesterRepo := semester.NewSemesterRepository(db)
 	// caseHeaderRepo := caseheader.NewCaseHeaderRepository(db)
 
-	authService := application.NewAuthService(authRepo)
+	authService := application.NewAuthService(authRepo, regisRepo)
 	// authService := services.NewAuthService(secretKey)
 	// albumService := services.NewAlbumService(albumRepo, trackRepo, validator)
 	// artistService := services.NewArtistService(artistRepo, userRepo, validator)

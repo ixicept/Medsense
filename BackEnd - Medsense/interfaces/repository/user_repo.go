@@ -2,6 +2,7 @@ package repository
 
 import (
 	"main/domain/auth"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -34,6 +35,7 @@ func (r *UserRepository) CreateAccount(account auth.Account) (string, error) {
 	existingAccount.DateOfBirth = account.DateOfBirth
 	existingAccount.PhoneNumber = account.PhoneNumber
 	existingAccount.Location = account.Location
+	existingAccount.UpdatedAt = time.Now().UTC()
 
 	if err := r.db.Save(&existingAccount).Error; err != nil {
 		return "", err

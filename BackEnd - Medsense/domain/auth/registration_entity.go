@@ -2,13 +2,12 @@ package auth
 
 import (
 	"errors"
+	"main/application/dto"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-
-type RegistrationID string
 type RegistrationStatus string
 
 const (
@@ -18,37 +17,33 @@ const (
 )
 
 type DoctorRegistration struct {
-	ID                RegistrationID
-	DoctorFullName    string
-	DoctorEmail       string 
-	DoctorPhoneNumber string
-	FileAttachment    string 
-	Status            RegistrationStatus
-	Reason            string 
-	SubmittedAt       time.Time
-	ReviewedAt        *time.Time 
-	ReviewerAccountID string 
+	ID             string
+	Username       string
+	Email          string
+	HashedPassword string
+	Role           string
+	DateOfBirth    string
+	PhoneNumber    string
+	FileAttachment []byte
+	Status         RegistrationStatus
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
-func NewDoctorRegistration(fullName string, email string, phoneNumber string, fileAttachment string) (*DoctorRegistration, error) {
-	if fullName == "" {
-		return nil, errors.New("doctor full name cannot be empty")
-	}
-	if email == "" {
-		return nil, errors.New("doctor email cannot be empty")
-	}
-	if phoneNumber == "" {
-		return nil, errors.New("doctor phone number cannot be empty")
-	}
+func NewDoctorRegistration(req dto.CreateRegistrationDTO) (*DoctorRegistration, error) {
 
 	return &DoctorRegistration{
-		ID:                RegistrationID(uuid.NewString()),
-		DoctorFullName:    fullName,
-		DoctorEmail:       email,
-		DoctorPhoneNumber: phoneNumber,
-		FileAttachment:    fileAttachment,
-		Status:            StatusPending,
-		SubmittedAt:       time.Now().UTC(),
+		ID:             uuid.NewString(),
+		Username:       req.Username,
+		Email:          req.Email,
+		HashedPassword: req.Password,
+		Role:           "doctor",
+		DateOfBirth:    req.DateOfBirth,
+		PhoneNumber:    req.PhoneNumber,
+		FileAttachment: req.FileAttachment,
+		Status:         StatusPending,
+		CreatedAt:      time.Now().UTC(),
+		UpdatedAt:      time.Now().UTC(),
 	}, nil
 }
 
@@ -56,14 +51,11 @@ func (dr *DoctorRegistration) Approve(adminID string) error {
 	if dr.Status != StatusPending {
 		return errors.New("registration is not in pending state, cannot approve")
 	}
-	if adminID == "" { // Basic check
+	if adminID == "" { 
 		return errors.New("admin ID is required for approval")
 	}
-	now := time.Now().UTC()
 	dr.Status = StatusApproved
-	dr.ReviewedAt = &now
-	dr.ReviewerAccountID = adminID
-	dr.Reason = "" // Clear any previous rejection reason
+	dr.UpdatedAt = time.Now().UTC()
 	return nil
 }
 
@@ -77,10 +69,7 @@ func (dr *DoctorRegistration) Reject(adminID string, reason string) error {
 	if reason == "" {
 		return errors.New("rejection reason cannot be empty")
 	}
-	now := time.Now().UTC()
 	dr.Status = StatusRejected
-	dr.ReviewedAt = &now
-	dr.ReviewerAccountID = adminID
-	dr.Reason = reason
+	dr.UpdatedAt = time.Now().UTC()
 	return nil
 }

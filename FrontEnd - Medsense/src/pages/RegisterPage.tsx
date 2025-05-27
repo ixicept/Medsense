@@ -6,7 +6,7 @@ import { DocumentUpload } from "../components/DocumentUpload";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Make sure this is imported
 import { Calendar } from "../components/Icons";
-import { register } from "../services/AuthService";
+import { register, registerDoctor } from "../services/AuthService";
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -118,11 +118,11 @@ export default function RegisterPage() {
     //   });
 
     if (activeTab === "doctor") {
-      // const response = await registerDoctor(apiFormData);
-      // if (response.data) {
-      //   toast.success("Registration submitted! An admin will review your application.");
-      //   nav("/");
-      // }
+      const response = await registerDoctor(apiFormData);
+      if (response.data) {
+        toast.success("Registration submitted! An admin will review your application.");
+        nav("/");
+      }
     }
     else if (activeTab === "patient") {
       const response = await register(apiFormData);

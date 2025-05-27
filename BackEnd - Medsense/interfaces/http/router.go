@@ -23,6 +23,7 @@ func NewRouter(db *gorm.DB, authHandler handler.AuthHandler) *gin.Engine {
 	{
 		api.POST("auth/register-patient", authHandler.CreateAccount)
 		api.POST("auth/login", authHandler.Login)
+		api.POST("auth/register-doctor", authHandler.CreateRegistration)
 		// protected := router.Group("/api")
 		// // protected.Use(authMiddleware(db))
 		// {
