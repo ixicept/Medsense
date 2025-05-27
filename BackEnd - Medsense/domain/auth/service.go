@@ -8,6 +8,6 @@ type Service interface {
 	FindByID(id string) (*Account, error)
 	FindByEmail(email string) (*Account, error)
 	ApproveRegistration(id string, adminID string) error
-	// SubmitDocterRegistration(registration DoctorRegistration) (string, error)
-	// FindPendingRegistrations(offset int, limit int) ([]DoctorRegistration, int, error)
+	SubmitDocterRegistration(registration dto.CreateRegistrationDTO) (error)
+	FindPendingRegistrations(offset int, limit int) ([]DoctorRegistration, int, error)
 }
