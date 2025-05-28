@@ -105,3 +105,34 @@ func (h *AuthHandler) CreateRegistration(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{"message": "Registration created successfully"})
 }
+
+func (h *AuthHandler) FindByRole(ctx *gin.Context) {
+	role := ctx.Param("role")
+	if role == "" {
+		ctx.JSON(400, gin.H{"error": "Role is required"})
+		return
+	}
+
+	accounts, _, err := h.AuthService.FindByRole(role, 0, 100)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Failed to find account by role"})
+		return
+	}
+
+	if accounts == nil {
+		ctx.JSON(404, gin.H{"message": "No account found with the specified role"})
+		return
+	}
+
+	var resp []dto.GetUserByRoleDTO
+
+	for _, account := range accounts {
+		resp = append(resp, dto.GetUserByRoleDTO{
+			Id:    account.ID,
+			Name:  account.Username,
+			Email: account.Email,
+		})
+	}
+
+	ctx.JSON(200, resp)
+}

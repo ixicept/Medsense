@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "react-toastify";
 import { getCurrentUser } from "../utils/auth";

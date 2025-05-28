@@ -1,29 +1,41 @@
 package handler
 
 import (
+	"main/application/dto"
 	"main/domain/appointment"
+	"main/domain/auth"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AppointmentHandler struct {
 	AppointmentService appointment.Service
+	AuthHandler        auth.Service
 }
 
-func NewAppointmentHandler(service appointment.Service) *AppointmentHandler {
+func NewAppointmentHandler(service appointment.Service, AuthHandler auth.Service) *AppointmentHandler {
 	return &AppointmentHandler{
 		AppointmentService: service,
+		AuthHandler:        AuthHandler,
 	}
 }
 
 func (h *AppointmentHandler) RequestAppointment(ctx *gin.Context) {
-	var req appointment.AppointmentRequest
+	var req dto.CreateAppointmentDTO
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	if err := h.AppointmentService.RequestAppointment(&req); err != nil {
+	account, err := h.AuthHandler.FindByEmail(req.PatientID)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Failed to find patient account"})
+		return
+	}
+
+	req.PatientID = account.ID
+
+	if err := h.AppointmentService.RequestAppointment(req); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
@@ -93,46 +105,41 @@ func (h *AppointmentHandler) FindAppointmentRequestsByDoctorID(ctx *gin.Context)
 }
 
 func (h *AppointmentHandler) ApproveAppointment(ctx *gin.Context) {
-	var req appointment.AppointmentRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{"error": "Invalid request"})
+	req := ctx.Param("appointment_id")
+	if req == "" {
+		ctx.JSON(400, gin.H{"error": "Appointment ID is required"})
 		return
 	}
-
-	if err := h.AppointmentService.ApproveAppointment(&req); err != nil {
+	if err := h.AppointmentService.ApproveAppointment(req); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
 	ctx.JSON(200, gin.H{"message": "Appointment approved successfully"})
 }
 
 func (h *AppointmentHandler) RejectAppointment(ctx *gin.Context) {
-	var req appointment.AppointmentRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{"error": "Invalid request"})
+	req := ctx.Param("appointment_id")
+	if req == "" {
+		ctx.JSON(400, gin.H{"error": "Appointment ID is required"})
 		return
 	}
-
-	if err := h.AppointmentService.RejectAppointment(&req); err != nil {
+	if err := h.AppointmentService.RejectAppointment(req); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
 	ctx.JSON(200, gin.H{"message": "Appointment rejected successfully"})
 }
 
 func (h *AppointmentHandler) CompleteAppointment(ctx *gin.Context) {
-	var req appointment.AppointmentRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{"error": "Invalid request"})
+	req := ctx.Param("apppointment_id")
+	if req == "" {
+		ctx.JSON(400, gin.H{"error": "Appointment ID is required"})
 		return
 	}
-
-	if err := h.AppointmentService.CompleteAppointment(&req); err != nil {
+	if err := h.AppointmentService.CompleteAppointment(req); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
 	ctx.JSON(200, gin.H{"message": "Appointment completed successfully"})
+
 }

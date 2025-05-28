@@ -64,3 +64,20 @@ func (r *UserRepository) FindByID(id string) (auth.Account, error) {
 	}
 	return account, nil
 }
+
+func (r *UserRepository) FindByRole(role string, offset int, limit int) ([]auth.Account, int, error) {
+	var accounts []auth.Account
+	var totalCount int64
+
+	query := r.db.Model(&auth.Account{}).Where("role = ?", role)
+
+	if err := query.Count(&totalCount).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := query.Offset(offset).Limit(limit).Find(&accounts).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return accounts, int(totalCount), nil
+}

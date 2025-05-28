@@ -62,3 +62,12 @@ export const registerDoctor = async (form: FormData) => {
     throw error;
   }
 };
+
+export const getDoctors = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/roles/doctor");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
