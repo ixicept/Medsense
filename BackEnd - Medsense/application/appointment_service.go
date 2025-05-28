@@ -1,7 +1,10 @@
 package application
 
 import (
+	"errors"
+	"main/application/dto"
 	"main/domain/appointment"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -18,21 +21,39 @@ func NewAppointmentService(appointmentRepo appointment.AppointmentRepository, va
 	}
 }
 
-func (s *AppointmentService) RequestAppointment(req *appointment.AppointmentRequest) error {
+func (s *AppointmentService) RequestAppointment(req dto.CreateAppointmentDTO) error {
 	if err := s.validate.Struct(req); err != nil {
 		return err // Validation error
 	}
 
-	return s.appointmentRepo.Save(req)
+	appointmentRequest, err := appointment.NewAppointmentRequest(req)
+	if err != nil {
+		return err
+	}
+
+	var appointment appointment.AppointmentRequest
+	appointment.ID = appointmentRequest.ID
+	appointment.PatientID = appointmentRequest.PatientID
+	appointment.DoctorID = appointmentRequest.DoctorID
+	appointment.RequestedDateTime = appointmentRequest.RequestedDateTime
+	appointment.Reason = appointmentRequest.Reason
+	appointment.PatientNotes = appointmentRequest.PatientNotes
+	appointment.Status = appointmentRequest.Status
+	appointment.CreatedAt = appointmentRequest.CreatedAt
+	appointment.UpdatedAt = appointmentRequest.UpdatedAt
+	appointment.ScheduledDateTime = appointmentRequest.ScheduledDateTime
+	appointment.DeclineReason = appointmentRequest.DeclineReason
+
+	return s.appointmentRepo.Save(appointment)
 }
 
 func (s *AppointmentService) FindAppointmentRequestByID(id string) (*appointment.AppointmentRequest, error) {
 	req, err := s.appointmentRepo.FindByID(id)
 	if err != nil {
-		return nil, err // Error from repository
+		return nil, err
 	}
 
-	return req, nil
+	return &req, nil
 }
 
 func (s *AppointmentService) FindAppointmentRequestsByPatientID(patientID string, statusFilter []appointment.AppointmentStatus, offset int, limit int) ([]*appointment.AppointmentRequest, int, error) {
@@ -53,29 +74,56 @@ func (s *AppointmentService) FindAppointmentRequestsByDoctorID(doctorID string, 
 	return requests, totalCount, nil
 }
 
-func (s *AppointmentService) ApproveAppointment(req *appointment.AppointmentRequest) error {
-	if err := s.validate.Struct(req); err != nil {
-		return err // Validation error
+func (s *AppointmentService) ApproveAppointment(ID string) error {
+	req, err := s.appointmentRepo.FindByID(ID)
+	if err != nil {
+		return err // Error from repository
+	}
+
+	if req.Status != appointment.StatusPending {
+		return errors.New("cannot approve an appointment that is not pending")
+	}
+
+	scheduledTime := time.Now().Add(30 * time.Minute) // Example scheduled time
+	if scheduledTime.Before(time.Now().Add(-5 * time.Minute)) {
+		return errors.New("approved scheduled time cannot be in the past")
 	}
 
 	req.Status = appointment.StatusApproved
+	req.ScheduledDateTime = scheduledTime
+	req.UpdatedAt = time.Now().UTC()
+
 	return s.appointmentRepo.Save(req)
 }
 
-func (s *AppointmentService) RejectAppointment(req *appointment.AppointmentRequest) error {
-	if err := s.validate.Struct(req); err != nil {
-		return err // Validation error
+func (s *AppointmentService) RejectAppointment(ID string) error {
+	req, err := s.appointmentRepo.FindByID(ID)
+	if err != nil {
+		return err // Error from repository
+	}
+
+	if req.Status != appointment.StatusPending {
+		return errors.New("cannot reject an appointment that is not pending")
 	}
 
 	req.Status = appointment.StatusDeclined
+	req.UpdatedAt = time.Now().UTC()
+
 	return s.appointmentRepo.Save(req)
 }
 
-func (s *AppointmentService) CompleteAppointment(req *appointment.AppointmentRequest) error {
-	if err := s.validate.Struct(req); err != nil {
-		return err // Validation error
+func (s *AppointmentService) CompleteAppointment(ID string) error {
+	req, err := s.appointmentRepo.FindByID(ID)
+	if err != nil {
+		return err // Error from repository
+	}
+
+	if req.Status != appointment.StatusApproved {
+		return errors.New("cannot complete an appointment that is not approved")
 	}
 
 	req.Status = appointment.StatusCompleted
+	req.UpdatedAt = time.Now().UTC()
+
 	return s.appointmentRepo.Save(req)
 }

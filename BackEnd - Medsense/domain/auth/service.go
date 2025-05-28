@@ -10,4 +10,5 @@ type Service interface {
 	ApproveRegistration(id string, adminID string) error
 	SubmitDocterRegistration(registration dto.CreateRegistrationDTO) (error)
 	FindPendingRegistrations(offset int, limit int) ([]DoctorRegistration, int, error)
+	FindByRole(role string, offset int, limit int) ([]Account, int, error)
 }

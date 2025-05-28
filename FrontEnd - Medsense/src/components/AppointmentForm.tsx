@@ -1,42 +1,73 @@
-import type React from "react"
+import type React from "react"; // Keep this if you prefer explicit type import
+import { useState } from "react";
+import { toast } from "react-toastify";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Check, Calendar } from "./Icons"; // Assuming these are correctly imported
+import { getCurrentUser } from "../utils/auth";
+import { requestAppointment } from "../services/AppointmentService";
 
-import { useState } from "react"
-import { toast } from "react-toastify"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-import { Check, Calendar } from "./Icons"
-import { getCurrentUser } from "../utils/auth"
+interface Doctor {
+  id: string;
+  name: string;
+  email: string;
+}
 
-export default function AppointmentForm() {
-  const [date, setDate] = useState<Date | null>(null)
-  const [submitted, setSubmitted] = useState(false)
+interface AppointmentFormProps {
+  doctors: Doctor[];
+  isLoadingDoctors: boolean;
+}
+
+export default function AppointmentForm({ doctors, isLoadingDoctors }: AppointmentFormProps) { // Destructure props
+  const [date, setDate] = useState<Date | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     doctor: "",
     reason: "",
-  })
+  });
 
-  const user = getCurrentUser()
+  const user = getCurrentUser();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const data = localStorage.getItem("user");
+    if (!formData.doctor) {
+      toast.error("Please select a doctor.");
+      return;
+    }
+    if (!date) {
+      toast.error("Please select an appointment date.");
+      return;
+    }
 
-    JSON.stringify(data)
+    try {
+      const form = new FormData();
+      form.append("doctor_id", formData.doctor);
+      form.append("requested_time", date.toISOString()); // Use ISO string for consistency
+      form.append("reason", formData.reason);
+      form.append("patient_id", user?.email || ""); // Use email as patient ID, or handle differently if needed
+      console.log(form.values()); // Log form data for debugging
+      const response = await requestAppointment(form)
+      console.log("Appointment response:", response);
+      setSubmitted(true);
+      toast.success("Appointment scheduled successfully!", {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error("Error scheduling appointment:", error);
+      toast.error("Could not schedule appointment.");
+    }
 
-    console.log("Appointment data:", { ...formData, date })
-    setSubmitted(true)
 
-    toast.success("Appointment scheduled successfully!", {
-      position: "bottom-right",
-      autoClose: 3000,
-    })
-  }
+  };
 
   if (submitted) {
     return (
@@ -45,45 +76,58 @@ export default function AppointmentForm() {
         <div>
           <h3 className="font-medium text-green-800">Appointment Scheduled</h3>
           <p className="text-sm text-green-700">
-            Your appointment has been successfully scheduled. We've sent a confirmation email to {user?.email}.
+            Your appointment has been successfully scheduled. We've sent a
+            confirmation email to {user?.email || "your email address"}.
           </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        <div className="space-y-2">
-          <label htmlFor="doctor" className="block text-sm font-medium text-sky-700">
-            Select Doctor
-          </label>
-          <select
-            id="doctor"
-            name="doctor"
-            value={formData.doctor}
-            onChange={handleChange}
-            className="w-full rounded-md border border-sky-200 p-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 outline-none"
-            required
-          >
-            <option value="">Select a doctor</option>
-            <option value="dr-johnson">Dr. Sarah Johnson</option>
-            <option value="dr-chen">Dr. Michael Chen</option>
-            <option value="dr-rodriguez">Dr. Emily Rodriguez</option>
-          </select>
-        </div>
+      {/* Doctor Selection Dropdown */}
+      <div className="space-y-2">
+        <label htmlFor="doctor" className="block text-sm font-medium text-sky-700">
+          Select Doctor
+        </label>
+        <select
+          id="doctor"
+          name="doctor"
+          value={formData.doctor}
+          onChange={handleChange}
+          className="w-full rounded-md border border-sky-200 p-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 outline-none"
+          required
+          disabled={isLoadingDoctors} // Disable while loading
+        >
+          {isLoadingDoctors ? (
+            <option value="">Loading doctors...</option>
+          ) : (
+            <>
+              <option value="">Select a doctor</option>
+              {doctors.length > 0 ? (
+                doctors.map((doc) => (
+                  <option key={doc.id} value={doc.id}>
+                    {doc.name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>No doctors available</option>
+              )}
+            </>
+          )}
+        </select>
       </div>
 
+      {/* Appointment Date */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-sky-700">Appointment Date</label>
         <div className="relative">
           <DatePicker
             selected={date}
-            onChange={(date) => setDate(date)}
+            onChange={(newDate) => setDate(newDate)} // Changed `date` to `newDate` for clarity
             dateFormat="MMMM d, yyyy"
-            minDate={new Date()}
+            minDate={new Date()} // Prevent selecting past dates
             className="w-full rounded-md border border-sky-200 p-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 outline-none"
             placeholderText="Select a date"
             required
@@ -94,6 +138,7 @@ export default function AppointmentForm() {
         </div>
       </div>
 
+      {/* Reason for Visit */}
       <div className="space-y-2">
         <label htmlFor="reason" className="block text-sm font-medium text-sky-700">
           Reason for Visit
@@ -101,7 +146,7 @@ export default function AppointmentForm() {
         <textarea
           id="reason"
           name="reason"
-          placeholder="Please describe your symptoms or reason for the appointment"
+          placeholder="Please describe your symptoms or reason for the appointment (optional)"
           className="w-full min-h-[100px] resize-none rounded-md border border-sky-200 p-3 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 outline-none"
           value={formData.reason}
           onChange={handleChange}
@@ -110,11 +155,11 @@ export default function AppointmentForm() {
 
       <button
         type="submit"
-        className="w-full py-2 px-4 rounded-md font-medium text-white bg-sky-500 hover:bg-sky-300 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-        disabled={!date || !formData.doctor}
+        className="w-full py-2 px-4 rounded-md font-medium text-white bg-sky-500 hover:bg-sky-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed" // Changed hover color slightly
+        disabled={!date || !formData.doctor || isLoadingDoctors} // Also disable if doctors are loading
       >
         Schedule Appointment
       </button>
     </form>
-  )
+  );
 }

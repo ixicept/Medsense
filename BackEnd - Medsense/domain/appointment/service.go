@@ -1,11 +1,15 @@
 package appointment
 
+import (
+	"main/application/dto"
+)
+
 type Service interface {
-	RequestAppointment(req *AppointmentRequest) error
+	RequestAppointment(req dto.CreateAppointmentDTO) error
 	FindAppointmentRequestByID(id string) (*AppointmentRequest, error)
 	FindAppointmentRequestsByPatientID(patientID string, statusFilter []AppointmentStatus, offset int, limit int) ([]*AppointmentRequest, int, error)
 	FindAppointmentRequestsByDoctorID(doctorID string, statusFilter []AppointmentStatus, offset int, limit int) ([]*AppointmentRequest, int, error)
-	ApproveAppointment(req *AppointmentRequest) error
-	RejectAppointment(req *AppointmentRequest) error
-	CompleteAppointment(req *AppointmentRequest) error
+	ApproveAppointment(ID string) error
+	RejectAppointment(ID string) error
+	CompleteAppointment(ID string) error
 }

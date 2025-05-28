@@ -1,4 +1,3 @@
-import { use } from "react";
 import axiosInstance from "./AxiosInstance";
 
 export const getAllPosts = async () => {

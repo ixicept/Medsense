@@ -2,6 +2,7 @@ package appointment
 
 import (
 	"errors"
+	"main/application/dto"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,24 +33,18 @@ type AppointmentRequest struct {
 	UpdatedAt         time.Time
 }
 
-func NewAppointmentRequest(
-	patientID string,
-	doctorID string,
-	requestedDateTime time.Time,
-	reason string,
-	patientNotes string,
-) (*AppointmentRequest, error) {
-	
+func NewAppointmentRequest(req dto.CreateAppointmentDTO) (*AppointmentRequest, error) {
 
+	requestedDateTime, _ := time.Parse(time.RFC3339, req.RequestedTime)
 	now := time.Now().UTC()
 	return &AppointmentRequest{
-		ID:                string(uuid.NewString()),
-		PatientID:         patientID,
-		DoctorID:          doctorID,
+		ID:                uuid.NewString(),
+		PatientID:         req.PatientID,
+		DoctorID:          req.DoctorID,
 		RequestedDateTime: requestedDateTime,
-		ScheduledDateTime: requestedDateTime,
-		Reason:            reason,
-		PatientNotes:      patientNotes,
+		ScheduledDateTime: time.Time{},
+		Reason:            req.Reason,
+		PatientNotes:      "",
 		Status:            StatusPending,
 		CreatedAt:         now,
 		UpdatedAt:         now,

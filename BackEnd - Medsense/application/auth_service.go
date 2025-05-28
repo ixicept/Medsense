@@ -104,3 +104,12 @@ func (s *AuthService) FindPendingRegistrations(offset int, limit int) ([]auth.Do
 
 	return registrations, totalCount, nil
 }
+
+func (s *AuthService) FindByRole(role string, offset int, limit int) ([]auth.Account, int, error) {
+	accounts, totalCount, err := s.accountRepo.FindByRole(role, offset, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return accounts, totalCount, nil
+}
