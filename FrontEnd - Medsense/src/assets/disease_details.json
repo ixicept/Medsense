@@ -1,0 +1,243 @@
+{
+  "Psoriasis": {
+    "description": "Psoriasis is a chronic autoimmune condition that causes skin cells to multiply up to 10 times faster than normal, leading to the buildup of thick, red, scaly patches on the skin. These patches commonly appear on the scalp, elbows, knees, and lower back, and can be itchy or even painful. The disease tends to have periods of flare-ups and remissions, and may be triggered by stress, skin injury, infections, or certain medications. It is not contagious but can significantly affect quality of life.",
+    "medication": [
+      "Topical corticosteroids (for mild to moderate plaques)",
+      "Vitamin D analogues (calcipotriol, calcitriol)",
+      "Coal tar preparations and salicylic acid (to reduce scaling)",
+      "Phototherapy (UVB or PUVA)",
+      "Systemic medications for severe cases (methotrexate, cyclosporine, acitretin)",
+      "Biologics (etanercept, adalimumab, ustekinumab, secukinumab, for moderate-to-severe or unresponsive cases)"
+    ]
+  },
+  "Varicose Veins": {
+    "description": "Varicose veins are enlarged, twisted veins that typically occur in the legs and feet due to weakened or damaged valves. This causes blood to pool in the veins, making them bulge and appear blue or dark purple. Symptoms include aching pain, heaviness, swelling, and visible, protruding veins. Prolonged standing, obesity, pregnancy, and family history are risk factors. While often a cosmetic concern, severe cases can lead to ulcers, bleeding, or clotting.",
+    "medication": [
+      "Compression stockings (first-line, worn throughout the day)",
+      "Sclerotherapy (injection of a solution to close off veins)",
+      "Laser therapy (to seal small varicose veins and spider veins)",
+      "Radiofrequency or laser ablation (minimally invasive vein closure)",
+      "Vein stripping or ambulatory phlebectomy (surgical removal for severe cases)",
+      "Pain relievers such as acetaminophen or NSAIDs for discomfort"
+    ]
+  },
+  "Typhoid": {
+    "description": "Typhoid fever is a serious and potentially life-threatening infection caused by the bacterium Salmonella typhi. It spreads through contaminated food and water, especially in areas with poor sanitation. Symptoms develop gradually and include prolonged high fever, headache, weakness, abdominal pain, constipation or diarrhea, and sometimes a rash of flat, rose-colored spots. Complications such as intestinal perforation can occur if untreated.",
+    "medication": [
+      "Antibiotics: ciprofloxacin or azithromycin (first-line), ceftriaxone (for resistant cases)",
+      "Fluid and electrolyte replacement to prevent dehydration",
+      "Rest and nutritional support",
+      "Corticosteroids (like dexamethasone) for severe, complicated cases",
+      "Hospitalization for severe or complicated infections"
+    ]
+  },
+  "Chicken pox": {
+    "description": "Chickenpox is a highly contagious viral infection caused by the varicella-zoster virus. It presents with an itchy, blister-like rash that spreads from the face and trunk to the rest of the body, accompanied by fever, fatigue, and loss of appetite. Chickenpox is usually mild in children but can be severe in adults, pregnant women, or immunocompromised individuals. After recovery, the virus can remain dormant and reactivate later as shingles.",
+    "medication": [
+      "Antihistamines (oral or topical) to relieve itching",
+      "Calamine lotion and cool baths for skin comfort",
+      "Acetaminophen for fever (avoid aspirin in children due to Reye's syndrome risk)",
+      "Acyclovir (antiviral, for severe cases or adults)",
+      "Immunoglobulin therapy for high-risk patients exposed to the virus",
+      "Isolation and supportive care to prevent spreading"
+    ]
+  },
+  "Impetigo": {
+    "description": "Impetigo is a highly contagious skin infection, most common among young children. It is usually caused by Staphylococcus aureus or Streptococcus pyogenes bacteria. The infection appears as red sores or blisters, often on the face, especially around the nose and mouth, which burst and develop honey-colored crusts. Scratching can spread the infection to other body parts or people.",
+    "medication": [
+      "Topical antibiotics: mupirocin or fusidic acid ointments (for mild cases)",
+      "Oral antibiotics: cephalexin, dicloxacillin, or clindamycin (for widespread or severe cases)",
+      "Cleaning affected areas with soap and water",
+      "Avoiding scratching and maintaining good hygiene to prevent spread"
+    ]
+  },
+  "Dengue": {
+    "description": "Dengue fever is a mosquito-borne viral illness common in tropical and subtropical regions. Symptoms include sudden high fever, severe headache, pain behind the eyes, muscle and joint pains, nausea, vomiting, swollen glands, and a skin rash. In some cases, it can progress to severe dengue (dengue hemorrhagic fever), which is a medical emergency.",
+    "medication": [
+      "Paracetamol (acetaminophen) for fever and pain (avoid NSAIDs and aspirin)",
+      "Oral rehydration and increased fluid intake to prevent dehydration",
+      "Hospitalization for intravenous fluids and monitoring in severe cases",
+      "Transfusion of blood products if bleeding occurs",
+      "Supportive care (no specific antiviral therapy available)"
+    ]
+  },
+  "Fungal infection": {
+    "description": "Fungal infections are caused by different types of fungi affecting the skin, nails, mouth, or genital area. Common examples include ringworm, athlete’s foot, jock itch, and candidiasis. Symptoms vary by location but often include redness, itching, scaling, or a rash. They are usually not serious but can be persistent and uncomfortable.",
+    "medication": [
+      "Topical antifungal creams: clotrimazole, terbinafine, miconazole",
+      "Oral antifungal agents: fluconazole, itraconazole, terbinafine (for widespread or nail/scalp involvement)",
+      "Keeping affected areas clean and dry",
+      "Antifungal shampoos for scalp infections"
+    ]
+  },
+  "Common Cold": {
+    "description": "The common cold is a viral infection affecting the upper respiratory tract. It causes symptoms like a runny or stuffy nose, sore throat, cough, sneezing, mild fever, and fatigue. The illness is usually mild, self-limiting, and lasts about a week, but it can affect daily activities.",
+    "medication": [
+      "Rest and adequate fluid intake",
+      "Over-the-counter decongestants and saline nasal sprays",
+      "Acetaminophen or ibuprofen for fever and aches",
+      "Cough suppressants and throat lozenges",
+      "Avoid antibiotics as colds are caused by viruses"
+    ]
+  },
+  "Pneumonia": {
+    "description": "Pneumonia is an infection of one or both lungs, causing the alveoli (air sacs) to fill with fluid or pus. It can be caused by bacteria, viruses, or fungi. Symptoms include cough (with phlegm or pus), fever, chills, shortness of breath, chest pain, and fatigue. It can range from mild to life-threatening, especially in young children, the elderly, or people with chronic illnesses.",
+    "medication": [
+      "Antibiotics for bacterial pneumonia (amoxicillin, azithromycin, or levofloxacin)",
+      "Antiviral or antifungal medications if causative agent is identified",
+      "Fever reducers and pain relievers (acetaminophen, ibuprofen)",
+      "Oxygen therapy in severe cases",
+      "Hospitalization for intravenous antibiotics and fluids if severe"
+    ]
+  },
+  "Dimorphic Hemorrhoids": {
+    "description": "Hemorrhoids are swollen veins in the lower rectum or anus. Dimorphic (both internal and external) hemorrhoids can cause pain, itching, discomfort, and rectal bleeding. Risk factors include chronic constipation, prolonged sitting, obesity, and pregnancy. Symptoms may worsen with straining during bowel movements.",
+    "medication": [
+      "Topical creams with hydrocortisone or witch hazel for itching and pain",
+      "Oral pain relievers such as acetaminophen or ibuprofen",
+      "Warm sitz baths to relieve discomfort",
+      "Stool softeners and increased dietary fiber to ease bowel movements",
+      "Minimally invasive procedures (rubber band ligation, sclerotherapy) or surgery for severe cases"
+    ]
+  },
+  "Arthritis": {
+    "description": "Arthritis refers to inflammation of one or more joints, resulting in pain, swelling, stiffness, and decreased range of motion. The most common forms are osteoarthritis and rheumatoid arthritis. It can affect people of all ages and may worsen over time, sometimes leading to joint deformity or disability if untreated.",
+    "medication": [
+      "Nonsteroidal anti-inflammatory drugs (NSAIDs) such as ibuprofen or naproxen",
+      "Corticosteroid injections to reduce inflammation",
+      "Disease-modifying antirheumatic drugs (DMARDs) for rheumatoid arthritis (methotrexate, sulfasalazine)",
+      "Biologic agents (adalimumab, etanercept) for severe cases",
+      "Physical therapy and regular exercise to maintain joint function"
+    ]
+  },
+  "Acne": {
+    "description": "Acne is a common skin condition that occurs when hair follicles become clogged with oil and dead skin cells. It results in whiteheads, blackheads, pimples, cysts, and sometimes scarring. Acne can affect people of all ages, though it is most common among teenagers.",
+    "medication": [
+      "Topical retinoids (adapalene, tretinoin) to unclog pores",
+      "Benzoyl peroxide and salicylic acid to reduce bacteria and inflammation",
+      "Topical or oral antibiotics for moderate to severe cases",
+      "Oral contraceptives for hormonal acne in women",
+      "Isotretinoin (for severe, resistant cases, requires monitoring)"
+    ]
+  },
+  "Bronchial Asthma": {
+    "description": "Bronchial asthma is a chronic inflammatory disease of the airways, making them swell, narrow, and produce extra mucus. This leads to recurrent episodes of wheezing, breathlessness, chest tightness, and coughing, especially at night or early morning. Asthma can be triggered by allergens, exercise, cold air, or respiratory infections.",
+    "medication": [
+      "Inhaled corticosteroids (fluticasone, budesonide) for long-term control",
+      "Short-acting beta agonists (albuterol) for quick relief during attacks",
+      "Leukotriene modifiers (montelukast) as adjunct therapy",
+      "Long-acting beta agonists (salmeterol) for moderate to severe asthma",
+      "Allergy medications and immunotherapy if allergies are a trigger"
+    ]
+  },
+  "Hypertension": {
+    "description": "Hypertension, or high blood pressure, is a chronic condition in which the force of blood against artery walls is consistently too high. It often has no symptoms, but long-term uncontrolled hypertension increases the risk of heart disease, stroke, kidney failure, and vision loss. Regular monitoring and lifestyle changes are crucial.",
+    "medication": [
+      "Angiotensin-converting enzyme (ACE) inhibitors (enalapril, lisinopril)",
+      "Angiotensin II receptor blockers (losartan, valsartan)",
+      "Calcium channel blockers (amlodipine, diltiazem)",
+      "Beta blockers (metoprolol, atenolol)",
+      "Thiazide diuretics (hydrochlorothiazide)",
+      "Lifestyle modifications (diet, exercise, salt reduction, weight loss)"
+    ]
+  },
+  "Migraine": {
+    "description": "Migraine is a neurological disorder characterized by recurring moderate to severe headaches, often with throbbing pain on one side of the head. Migraines may be accompanied by nausea, vomiting, and sensitivity to light and sound. Some people experience warning symptoms known as aura before attacks.",
+    "medication": [
+      "Triptans (sumatriptan, rizatriptan) for acute attacks",
+      "NSAIDs (ibuprofen, naproxen) and acetaminophen for pain relief",
+      "Anti-nausea medications (metoclopramide, prochlorperazine)",
+      "Beta blockers (propranolol) or calcium channel blockers (verapamil) for prevention",
+      "CGRP inhibitors (erenumab) for chronic migraine"
+    ]
+  },
+  "Cervical spondylosis": {
+    "description": "Cervical spondylosis is age-related wear and tear of the spinal disks in the neck. It is very common and worsens with age, causing neck pain, stiffness, headaches, and sometimes numbness or weakness in the arms or hands if nerves are compressed. Most people experience only mild symptoms.",
+    "medication": [
+      "NSAIDs (ibuprofen, naproxen) to relieve pain and inflammation",
+      "Muscle relaxants for muscle spasms (cyclobenzaprine)",
+      "Physical therapy for posture and neck strength",
+      "Cervical collar for short-term support",
+      "Surgery (rare, for severe nerve compression)"
+    ]
+  },
+  "Jaundice": {
+    "description": "Jaundice is a condition characterized by yellowing of the skin, eyes, and mucous membranes due to high levels of bilirubin in the blood. It is a symptom of underlying diseases such as hepatitis, gallstones, or hemolytic anemia rather than a disease itself. Symptoms may also include dark urine, pale stools, and itching.",
+    "medication": [
+      "Treatment of the underlying cause (e.g., antivirals for hepatitis, surgery for gallstones)",
+      "Supportive care and monitoring of liver function",
+      "Phototherapy for newborns with neonatal jaundice",
+      "Exchange transfusion (in severe neonatal cases)"
+    ]
+  },
+  "Malaria": {
+    "description": "Malaria is a life-threatening disease caused by Plasmodium parasites, transmitted through the bite of infected Anopheles mosquitoes. Symptoms include fever, chills, sweats, headache, nausea, vomiting, and muscle pain. Severe cases can cause anemia, respiratory distress, or organ failure.",
+    "medication": [
+      "Artemisinin-based combination therapies (ACTs) such as artemether-lumefantrine",
+      "Chloroquine or quinine (for sensitive strains)",
+      "Primaquine for eradication of dormant liver stages (P. vivax and P. ovale)",
+      "Intravenous artesunate for severe malaria",
+      "Supportive care and hospitalization if severe"
+    ]
+  },
+  "urinary tract infection": {
+    "description": "A urinary tract infection (UTI) is an infection in any part of the urinary system (kidneys, ureters, bladder, and urethra). Symptoms include a strong, persistent urge to urinate, burning sensation during urination, cloudy urine, pelvic pain, and sometimes fever. Women are at higher risk than men.",
+    "medication": [
+      "Antibiotics: nitrofurantoin, trimethoprim-sulfamethoxazole, fosfomycin, or ciprofloxacin (as guided by local resistance patterns)",
+      "Phenazopyridine (for symptom relief, short term only)",
+      "Drinking plenty of fluids to help flush bacteria",
+      "Hospitalization for intravenous antibiotics in severe or complicated cases"
+    ]
+  },
+  "allergy": {
+    "description": "An allergy is an exaggerated immune response to substances (allergens) that are normally harmless, such as pollen, dust, foods, or animal dander. Symptoms may range from sneezing, itching, rashes, and watery eyes to severe anaphylaxis. Management depends on trigger identification and avoidance.",
+    "medication": [
+      "Antihistamines (cetirizine, loratadine) for mild to moderate symptoms",
+      "Corticosteroid nasal sprays (fluticasone, budesonide) for allergic rhinitis",
+      "Epinephrine auto-injector (EpiPen) for severe allergic reactions (anaphylaxis)",
+      "Leukotriene modifiers and decongestants as adjuncts",
+      "Allergen immunotherapy (allergy shots) for long-term desensitization"
+    ]
+  },
+  "gastroesophageal reflux disease": {
+    "description": "Gastroesophageal reflux disease (GERD) is a chronic condition where stomach acid or bile flows back into the esophagus, irritating its lining. Symptoms include heartburn, regurgitation, chest pain, difficulty swallowing, and chronic cough. GERD can lead to complications like esophagitis or Barrett’s esophagus if untreated.",
+    "medication": [
+      "Antacids (aluminum hydroxide, magnesium hydroxide) for quick relief",
+      "H2 receptor blockers (ranitidine, famotidine) to decrease acid production",
+      "Proton pump inhibitors (omeprazole, esomeprazole) for long-term suppression",
+      "Prokinetic agents (metoclopramide) in selected cases",
+      "Lifestyle changes: weight loss, elevating head of bed, avoiding trigger foods"
+    ]
+  },
+  "drug reaction": {
+    "description": "A drug reaction is an unwanted or harmful effect experienced after the administration of a medication. Reactions can range from mild rashes or stomach upset to severe, life-threatening anaphylaxis or organ damage. Drug allergies, side effects, and interactions are all types of adverse drug reactions.",
+    "medication": [
+      "Immediate discontinuation of the suspected medication",
+      "Antihistamines (diphenhydramine, cetirizine) for mild allergic reactions",
+      "Corticosteroids (prednisone) for severe inflammation",
+      "Epinephrine for anaphylactic reactions (medical emergency)",
+      "Medical monitoring and supportive care as needed"
+    ]
+  },
+  "peptic ulcer disease": {
+    "description": "Peptic ulcer disease involves open sores that develop on the inner lining of the stomach, upper small intestine, or esophagus due to stomach acid and digestive juices. The main causes are infection with Helicobacter pylori bacteria or long-term use of NSAIDs. Symptoms include burning stomach pain, bloating, nausea, and, in severe cases, bleeding.",
+    "medication": [
+      "Proton pump inhibitors (omeprazole, lansoprazole) to reduce acid production",
+      "H2 blockers (ranitidine, famotidine)",
+      "Antibiotics (clarithromycin, amoxicillin, metronidazole) to eradicate H. pylori",
+      "Antacids for symptom relief",
+      "Bismuth subsalicylate as adjunct therapy",
+      "Avoidance of NSAIDs and smoking cessation"
+    ]
+  },
+  "diabetes": {
+    "description": "Diabetes is a chronic metabolic disorder characterized by high blood glucose (sugar) levels due to insufficient insulin production or ineffective insulin action. Symptoms include excessive thirst, frequent urination, unexplained weight loss, fatigue, and blurred vision. Long-term complications affect the eyes, kidneys, nerves, heart, and blood vessels.",
+    "medication": [
+      "Insulin therapy (essential for type 1 and advanced type 2 diabetes)",
+      "Oral hypoglycemic agents (metformin, sulfonylureas, DPP-4 inhibitors, SGLT2 inhibitors, GLP-1 agonists) for type 2 diabetes",
+      "Blood pressure and cholesterol control medications to reduce risk of complications",
+      "Regular monitoring of blood glucose levels",
+      "Dietary management and regular physical activity"
+    ]
+  }
+}

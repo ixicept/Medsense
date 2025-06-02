@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 import nltk
 from nltk.tokenize import word_tokenize
@@ -79,7 +80,7 @@ with open("full_pipeline.pkl", "rb") as f:
     model = pickle.load(f)
 
 app = Flask(__name__)
-
+CORS(app, origins=["http://localhost:5174", "http://localhost:5173"])
 @app.route("/predict", methods=["POST"])
 def predict():
     payload = request.get_json(force=True)
@@ -95,4 +96,4 @@ def predict():
     })
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=4999, debug=True)
