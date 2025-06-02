@@ -49,3 +49,10 @@ func (s *HospitalService) GetAllHospitals(offset int, limit int) ([]*hospital.Ho
 
 	return hospitals, totalCount, nil
 }
+
+func (s *HospitalService) DeleteByID(id string) error {
+	if err := s.hospitalRepository.DeleteByID(id); err != nil {
+		return err
+	}
+	return nil
+}

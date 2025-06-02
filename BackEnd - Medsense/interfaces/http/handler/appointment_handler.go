@@ -65,7 +65,7 @@ func (h *AppointmentHandler) FindAppointmentRequestByID(ctx *gin.Context) {
 }
 
 func (h *AppointmentHandler) FindAppointmentRequestsByPatientID(ctx *gin.Context) {
-	patientID := ctx.Param("patient_id")
+	patientID := ctx.Param("patientID")
 	if patientID == "" {
 		ctx.JSON(400, gin.H{"error": "Patient ID is required"})
 		return
@@ -85,7 +85,7 @@ func (h *AppointmentHandler) FindAppointmentRequestsByPatientID(ctx *gin.Context
 }
 
 func (h *AppointmentHandler) FindAppointmentRequestsByDoctorID(ctx *gin.Context) {
-	doctorID := ctx.Param("doctor_id")
+	doctorID := ctx.Param("doctorID")
 	if doctorID == "" {
 		ctx.JSON(400, gin.H{"error": "Doctor ID is required"})
 		return
@@ -105,7 +105,7 @@ func (h *AppointmentHandler) FindAppointmentRequestsByDoctorID(ctx *gin.Context)
 }
 
 func (h *AppointmentHandler) ApproveAppointment(ctx *gin.Context) {
-	req := ctx.Param("appointment_id")
+	req := ctx.Param("appointmentID")
 	if req == "" {
 		ctx.JSON(400, gin.H{"error": "Appointment ID is required"})
 		return
@@ -118,7 +118,7 @@ func (h *AppointmentHandler) ApproveAppointment(ctx *gin.Context) {
 }
 
 func (h *AppointmentHandler) RejectAppointment(ctx *gin.Context) {
-	req := ctx.Param("appointment_id")
+	req := ctx.Param("appointmentID")
 	if req == "" {
 		ctx.JSON(400, gin.H{"error": "Appointment ID is required"})
 		return
@@ -142,4 +142,36 @@ func (h *AppointmentHandler) CompleteAppointment(ctx *gin.Context) {
 	}
 	ctx.JSON(200, gin.H{"message": "Appointment completed successfully"})
 
+}
+
+func (h *AppointmentHandler) FindDoctorAppointmentsToday(ctx *gin.Context) {
+	doctorID := ctx.Param("doctorID")
+	if doctorID == "" {
+		ctx.JSON(400, gin.H{"error": "Doctor ID is required"})
+		return
+	}
+
+	appointments, err := h.AppointmentService.FindDoctorAppointmentsToday(doctorID)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, appointments)
+}
+
+func (h *AppointmentHandler) FindPatientAppointmentsToday(ctx *gin.Context) {
+	patientID := ctx.Param("patientID")
+	if patientID == "" {
+		ctx.JSON(400, gin.H{"error": "Patient ID is required"})
+		return
+	}
+
+	appointments, err := h.AppointmentService.FindPatientAppointmentsToday(patientID)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, appointments)
 }

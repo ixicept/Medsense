@@ -94,3 +94,29 @@ func (r *AppointmentRepository) FindByDoctorIDAndDateRange(doctorID string, star
 
 	return appointments, nil
 }
+
+func (r *AppointmentRepository) FindDoctorAppointmentToday(doctorID string, date time.Time) ([]*appointment.AppointmentRequest, error) {
+	var appointments []*appointment.AppointmentRequest
+
+	startOfDay := date.Truncate(24 * time.Hour)
+	endOfDay := startOfDay.Add(24 * time.Hour)
+
+	if err := r.db.Where("doctor_id = ? AND start_time >= ? AND end_time <= ?", doctorID, startOfDay, endOfDay).Find(&appointments).Error; err != nil {
+		return nil, err
+	}
+
+	return appointments, nil
+}
+
+func (r *AppointmentRepository) FindPatientAppointmentToday(patientID string, date time.Time) ([]*appointment.AppointmentRequest, error) {
+	var appointments []*appointment.AppointmentRequest
+
+	startOfDay := date.Truncate(24 * time.Hour)
+	endOfDay := startOfDay.Add(24 * time.Hour)
+
+	if err := r.db.Where("patient_id = ? AND start_time >= ? AND end_time <= ?", patientID, startOfDay, endOfDay).Find(&appointments).Error; err != nil {
+		return nil, err
+	}
+
+	return appointments, nil
+}

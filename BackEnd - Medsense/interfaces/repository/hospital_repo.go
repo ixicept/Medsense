@@ -57,3 +57,14 @@ func (r *HospitalRepository) GetAllHospitals(offset int, limit int) ([]*hospital
 
 	return hospitals, int(totalCount), nil
 }
+
+func (r *HospitalRepository) DeleteByID(id string) error {
+	var hospitalEntity hospital.Hospital
+	if err := r.db.First(&hospitalEntity, "id = ?", id).Error; err != nil {
+		return err
+	}
+	if err := r.db.Delete(&hospitalEntity).Error; err != nil {
+		return err
+	}
+	return nil
+}
