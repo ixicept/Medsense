@@ -51,11 +51,14 @@ export const registerDoctor = async (form: FormData) => {
         date_of_birth: form.get("date_of_birth"),
       })
     );
-    const response = await axiosInstance.post("/auth/register-doctor",  formData, { 
-        headers: { 
-            "Content-Type": "multipart/form-data", 
+    const response = await axiosInstance.post(
+      "/auth/register-doctor",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-    }
+      }
     );
     return response.data;
   } catch (error) {
@@ -70,4 +73,4 @@ export const getDoctors = async () => {
   } catch (error) {
     throw error;
   }
-}
+};

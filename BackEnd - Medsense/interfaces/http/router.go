@@ -25,6 +25,10 @@ func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handle
 		api.POST("auth/login", authHandler.Login)
 		api.POST("auth/register-doctor", authHandler.CreateRegistration)
 		api.GET("auth/roles/:role", authHandler.FindByRole)
+		api.POST("doctor-registration/approve", authHandler.ApproveRegistration)
+		api.POST("doctor-registration/decline", authHandler.DeclineRegistration)
+		api.GET("doctor-registration", authHandler.FindPending)
+
 		api.POST("forum/post", forumHandler.CreatePost)
 		api.POST("forum/reply", forumHandler.CreateReply)
 		api.GET("forum/posts", forumHandler.GetAllPosts)
