@@ -5,6 +5,7 @@ import (
 	"main/application"
 	"main/domain/appointment"
 	"main/domain/auth"
+	doctorschedule "main/domain/doctor_schedule"
 	"main/domain/forum"
 	"main/domain/hospital"
 	"main/infrastructure"
@@ -29,6 +30,7 @@ func main() {
 		&forum.ForumReply{},
 		&appointment.AppointmentRequest{},
 		&hospital.Hospital{},
+		&doctorschedule.Schedule{},
 	)
 
 	validator := validator.New()
@@ -39,11 +41,13 @@ func main() {
 	forumRepo := repository.NewForumRepository(db)
 	appointmentRepo := repository.NewAppointmentRepository(db)
 	hospitalRepo := repository.NewHospitalRepository(db)
+	scheduleRepo := repository.NewScheduleRepository(db)
 
 	authService := application.NewAuthService(authRepo, regisRepo)
 	forumService := application.NewForumService(forumRepo, validator)
 	appointmentService := application.NewAppointmentService(appointmentRepo, validator)
 	hospitalService := application.NewHospitalService(hospitalRepo, validator)
+	scheduleService := application.NewScheduleService(scheduleRepo, validator)
 	// authService := services.NewAuthService(secretKey)
 	// albumService := services.NewAlbumService(albumRepo, trackRepo, validator)
 	// artistService := services.NewArtistService(artistRepo, userRepo, validator)
@@ -54,13 +58,14 @@ func main() {
 	forumHandler := handler.NewForumHandler(forumService)
 	appointmentHandler := handler.NewAppointmentHandler(appointmentService, authService)
 	hospitalHandler := handler.NewHospitalHandler(hospitalService)
+	scheduleHandler := handler.NewScheduleHandler(scheduleService)
 
 	// albumController := controllers.NewAlbumController(albumService)
 	// artistController := controllers.NewArtistController(artistService)
 	// verificationController := controllers.NewVerificationRequestController(verificationService)
 	// trackController := controllers.NewTrackController(trackService)
 
-	r := interfaces.NewRouter(db, *authHandler, *forumHandler, *appointmentHandler, *hospitalHandler)
+	r := interfaces.NewRouter(db, *authHandler, *forumHandler, *appointmentHandler, *hospitalHandler, *scheduleHandler)
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8080", "http://localhost:6379"},

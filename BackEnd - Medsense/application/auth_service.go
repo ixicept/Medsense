@@ -135,3 +135,16 @@ func (s *AuthService) FindByRole(role string, offset int, limit int) ([]auth.Acc
 
 	return accounts, totalCount, nil
 }
+
+func (s *AuthService) FindByDoctorID(doctorID string) (*auth.Account, error) {
+	account, err := s.accountRepo.FindByDoctorID(doctorID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find account by doctor ID: %w", err)
+	}
+
+	if account.ID == "" {
+		return nil, fmt.Errorf("no account found for doctor ID: %s", doctorID)
+	}
+
+	return &account, nil
+}

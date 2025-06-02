@@ -31,6 +31,7 @@ func (s *AppointmentService) RequestAppointment(req dto.CreateAppointmentDTO) er
 		return err
 	}
 
+	appointmentRequest.ID = req.ID // Use the provided ID if it exists
 	return s.appointmentRepo.Save(*appointmentRequest)
 }
 

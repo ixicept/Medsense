@@ -12,4 +12,5 @@ type Service interface {
 	FindPendingRegistrations(offset int, limit int) ([]DoctorRegistration, int, error)
 	FindByRole(role string, offset int, limit int) ([]Account, int, error)
 	DeclineRegistration(id string, adminID string) error
+	FindByDoctorID(doctorID string) (*Account, error)
 }

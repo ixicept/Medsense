@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handler.ForumHandler, appointmentHandler handler.AppointmentHandler, hospitalHandler handler.HospitalHandler) *gin.Engine {
+func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handler.ForumHandler, appointmentHandler handler.AppointmentHandler, hospitalHandler handler.HospitalHandler, scheduleHandler handler.ScheduleHandler) *gin.Engine {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
@@ -28,6 +28,7 @@ func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handle
 		api.POST("doctor-registration/approve", authHandler.ApproveRegistration)
 		api.POST("doctor-registration/decline", authHandler.DeclineRegistration)
 		api.GET("doctor-registration", authHandler.FindPending)
+		api.GET("doctor/:doctorID", authHandler.FindByDoctorID)
 
 		api.POST("forum/post", forumHandler.CreatePost)
 		api.POST("forum/reply", forumHandler.CreateReply)
@@ -40,6 +41,11 @@ func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handle
 		api.GET("hospital", hospitalHandler.GetAllHospitals)
 		api.POST("hospital", hospitalHandler.Save)
 		api.GET("hospital/:id", hospitalHandler.FindByID)
+
+		api.POST("schedule", scheduleHandler.Save)
+		api.GET("schedule/:id", scheduleHandler.FindByID)
+		api.GET("schedule/:doctorID", scheduleHandler.FindByDoctorID)
+		api.DELETE("schedule/:id", scheduleHandler.DeleteByID)
 		// protected := router.Group("/api")
 		// // protected.Use(authMiddleware(db))
 		// {

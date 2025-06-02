@@ -20,12 +20,12 @@ func NewAuthHandler(authService auth.Service) *AuthHandler {
 		AuthService: authService,
 	}
 }
-func (h* AuthHandler) FindPending(ctx *gin.Context){
-	resp, _, err := h.AuthService.FindPendingRegistrations(0,1000)
-	if err!= nil{
-		ctx.JSON(500, gin.H{"err" : err})
+func (h *AuthHandler) FindPending(ctx *gin.Context) {
+	resp, _, err := h.AuthService.FindPendingRegistrations(0, 1000)
+	if err != nil {
+		ctx.JSON(500, gin.H{"err": err})
 	}
-	ctx.JSON(200, gin.H{"payload" : resp})
+	ctx.JSON(200, gin.H{"payload": resp})
 }
 
 func (h *AuthHandler) CreateAccount(ctx *gin.Context) {
@@ -112,32 +112,32 @@ func (h *AuthHandler) CreateRegistration(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{"message": "Registration created successfully"})
 }
-func (h *AuthHandler) ApproveRegistration(ctx *gin.Context){
+func (h *AuthHandler) ApproveRegistration(ctx *gin.Context) {
 	var request struct {
-		Id    string `json:"id"`
+		Id      string `json:"id"`
 		AdminId string `json:"admin_id"`
 	}
 	ctx.ShouldBindJSON(&request)
-	err:=h.AuthService.ApproveRegistration(request.Id, request.AdminId)
-	if err!=nil{
-		ctx.JSON(500, gin.H{"error" : err})
+	err := h.AuthService.ApproveRegistration(request.Id, request.AdminId)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err})
 		return
 	}
-	ctx.JSON(200, gin.H{"ok" : "ok"})
+	ctx.JSON(200, gin.H{"ok": "ok"})
 }
 
-func (h *AuthHandler) DeclineRegistration(ctx *gin.Context){
+func (h *AuthHandler) DeclineRegistration(ctx *gin.Context) {
 	var request struct {
-		Id    string `json:"id"`
+		Id      string `json:"id"`
 		AdminId string `json:"admin_id"`
 	}
 	ctx.ShouldBindJSON(&request)
-	err:=h.AuthService.DeclineRegistration(request.Id, request.AdminId)
-	if err!=nil{
-		ctx.JSON(500, gin.H{"error" : err})
+	err := h.AuthService.DeclineRegistration(request.Id, request.AdminId)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err})
 		return
 	}
-	ctx.JSON(200, gin.H{"ok" : "ok"})
+	ctx.JSON(200, gin.H{"ok": "ok"})
 }
 
 func (h *AuthHandler) FindByRole(ctx *gin.Context) {
@@ -162,11 +162,37 @@ func (h *AuthHandler) FindByRole(ctx *gin.Context) {
 
 	for _, account := range accounts {
 		resp = append(resp, dto.GetUserByRoleDTO{
-			Id:    account.ID,
-			Name:  account.Username,
-			Email: account.Email,
+			Id:          account.ID,
+			Name:        account.Username,
+			Email:       account.Email,
+			PhoneNumber: account.PhoneNumber,
 		})
 	}
 
 	ctx.JSON(200, resp)
+}
+
+func (h *AuthHandler) FindByDoctorID(ctx *gin.Context) {
+	doctorID := ctx.Param("doctorID")
+	if doctorID == "" {
+		ctx.JSON(400, gin.H{"error": "Doctor ID is required"})
+		return
+	}
+
+	account, err := h.AuthService.FindByDoctorID(doctorID)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Failed to find doctor by ID"})
+		return
+	}
+	if account == nil {
+		ctx.JSON(404, gin.H{"error": "No account found for doctor ID"})
+		return
+	}
+
+	ctx.JSON(200, dto.GetUserByRoleDTO{
+		Id:          account.ID,
+		Name:        account.Username,
+		Email:       account.Email,
+		PhoneNumber: account.PhoneNumber,
+	})
 }
