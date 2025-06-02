@@ -20,6 +20,13 @@ func NewAuthHandler(authService auth.Service) *AuthHandler {
 		AuthService: authService,
 	}
 }
+func (h* AuthHandler) FindPending(ctx *gin.Context){
+	resp, _, err := h.AuthService.FindPendingRegistrations(0,1000)
+	if err!= nil{
+		ctx.JSON(500, gin.H{"err" : err})
+	}
+	ctx.JSON(200, gin.H{"payload" : resp})
+}
 
 func (h *AuthHandler) CreateAccount(ctx *gin.Context) {
 
@@ -104,6 +111,33 @@ func (h *AuthHandler) CreateRegistration(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{"message": "Registration created successfully"})
+}
+func (h *AuthHandler) ApproveRegistration(ctx *gin.Context){
+	var request struct {
+		Id    string `json:"id"`
+		AdminId string `json:"admin_id"`
+	}
+	ctx.ShouldBindJSON(&request)
+	err:=h.AuthService.ApproveRegistration(request.Id, request.AdminId)
+	if err!=nil{
+		ctx.JSON(500, gin.H{"error" : err})
+		return
+	}
+	ctx.JSON(200, gin.H{"ok" : "ok"})
+}
+
+func (h *AuthHandler) DeclineRegistration(ctx *gin.Context){
+	var request struct {
+		Id    string `json:"id"`
+		AdminId string `json:"admin_id"`
+	}
+	ctx.ShouldBindJSON(&request)
+	err:=h.AuthService.DeclineRegistration(request.Id, request.AdminId)
+	if err!=nil{
+		ctx.JSON(500, gin.H{"error" : err})
+		return
+	}
+	ctx.JSON(200, gin.H{"ok" : "ok"})
 }
 
 func (h *AuthHandler) FindByRole(ctx *gin.Context) {

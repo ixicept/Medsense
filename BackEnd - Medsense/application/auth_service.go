@@ -25,14 +25,10 @@ func NewAuthService(accountRepo auth.AccountRepository, registrationRepo auth.Do
 }
 
 func (s *AuthService) CreateAccount(createUserReq dto.CreateUserDTO) (*auth.Account, error) {
-	_, err := s.accountRepo.FindByEmail(createUserReq.Email)
-	if err != nil {
-		return nil, err
-	}
 
 	newAccount, err := auth.NewAccount(createUserReq)
 	if err != nil {
-		return nil, err // Error from domain (e.g., "password too short")
+		return nil, err
 	}
 
 	s.accountRepo.CreateAccount(*newAccount)
@@ -44,10 +40,6 @@ func (s *AuthService) Login(email, password string) (*auth.Account, error) {
 	account, err := s.accountRepo.FindByEmail(email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find account by email: %w", err)
-	}
-
-	if &account == nil {
-		return nil, fmt.Errorf("no account found with email %s", email)
 	}
 
 	fmt.Print("Logging in with email:", email)
@@ -78,9 +70,33 @@ func (s *AuthService) FindByID(id string) (*auth.Account, error) {
 }
 
 func (s *AuthService) ApproveRegistration(id string, adminID string) error {
-	// Here you would typically update the registration status in the database
-	// to indicate that it has been approved by the admin.
-	// This is a placeholder implementation.
+	registration, err :=s.registrationRepo.FindByID(id)
+	if err != nil{
+		return err
+	}
+	err = registration.Approve(adminID)
+	s.registrationRepo.CreateRegistration(registration)
+
+
+	var req =  dto.CreateUserDTO{Username: registration.Username, Email: registration.Email, Password: registration.HashedPassword, PhoneNumber: registration.PhoneNumber, DateOfBirth: registration.DateOfBirth, Location: "Doctor Place"}
+	s.CreateAccount(req)
+	if err!=nil{
+		return err
+	}
+	return nil
+}
+
+
+func (s *AuthService) DeclineRegistration(id string, adminID string) error {
+	registration, err :=s.registrationRepo.FindByID(id)
+	if err != nil{
+		return err
+	}
+	err = registration.Reject(adminID)
+	s.registrationRepo.CreateRegistration(registration)
+	if err!=nil{
+		return err
+	}
 	return nil
 }
 

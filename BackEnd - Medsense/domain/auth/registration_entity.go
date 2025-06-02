@@ -59,15 +59,12 @@ func (dr *DoctorRegistration) Approve(adminID string) error {
 	return nil
 }
 
-func (dr *DoctorRegistration) Reject(adminID string, reason string) error {
+func (dr *DoctorRegistration) Reject(adminID string) error {
 	if dr.Status != StatusPending {
 		return errors.New("registration is not in pending state, cannot reject")
 	}
 	if adminID == "" {
 		return errors.New("admin ID is required for rejection")
-	}
-	if reason == "" {
-		return errors.New("rejection reason cannot be empty")
 	}
 	dr.Status = StatusRejected
 	dr.UpdatedAt = time.Now().UTC()
