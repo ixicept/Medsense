@@ -10,6 +10,7 @@ import (
 type Schedule struct {
 	ID            string
 	DoctorID      string
+	HospitalID    string
 	Day           string
 	ScheduleStart time.Time
 	ScheduleEnd   time.Time
@@ -32,6 +33,7 @@ func NewSchedule(req dto.CreateScheduleDTO) (*Schedule, error) {
 	return &Schedule{
 		ID:            uuid.NewString(),
 		DoctorID:      req.DoctorID,
+		HospitalID:    req.HospitalID,
 		Day:           req.Day,
 		ScheduleStart: scheduleStart,
 		ScheduleEnd:   scheduleEnd,

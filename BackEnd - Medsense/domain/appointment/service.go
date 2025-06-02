@@ -12,4 +12,6 @@ type Service interface {
 	ApproveAppointment(ID string) error
 	RejectAppointment(ID string) error
 	CompleteAppointment(ID string) error
+	FindDoctorAppointmentsToday(doctorID string) ([]*AppointmentRequest, error)
+	FindPatientAppointmentsToday(patientID string) ([]*AppointmentRequest, error)
 }

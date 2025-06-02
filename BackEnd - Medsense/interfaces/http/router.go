@@ -37,15 +37,24 @@ func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handle
 		api.GET("forum/posts/:postID/replies", forumHandler.GetRepliesByPostID)
 
 		api.POST("appointment/request", appointmentHandler.RequestAppointment)
+		api.POST("appointment/approve", appointmentHandler.ApproveAppointment)
+		api.POST("appointment/decline", appointmentHandler.RejectAppointment)
+		api.POST("appointment/complete", appointmentHandler.CompleteAppointment)
+		api.GET("appointment/patient/:patientID", appointmentHandler.FindAppointmentRequestsByPatientID)
+		api.GET("appointment/today/patient/:patientID", appointmentHandler.FindPatientAppointmentsToday)
+		api.GET("appointment/doctor/:doctorID", appointmentHandler.FindAppointmentRequestsByDoctorID)
+		api.GET("appointment/today/doctor/:doctorID", appointmentHandler.FindDoctorAppointmentsToday)
 
 		api.GET("hospital", hospitalHandler.GetAllHospitals)
 		api.POST("hospital", hospitalHandler.Save)
 		api.GET("hospital/:id", hospitalHandler.FindByID)
+		api.DELETE("hospital/:id", hospitalHandler.DeleteByID)
 
 		api.POST("schedule", scheduleHandler.Save)
 		api.GET("schedule/:id", scheduleHandler.FindByID)
 		api.GET("schedule/:doctorID", scheduleHandler.FindByDoctorID)
 		api.DELETE("schedule/:id", scheduleHandler.DeleteByID)
+
 		// protected := router.Group("/api")
 		// // protected.Use(authMiddleware(db))
 		// {

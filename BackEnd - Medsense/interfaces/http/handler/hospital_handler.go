@@ -59,3 +59,18 @@ func (h *HospitalHandler) GetAllHospitals(ctx *gin.Context) {
 	}
 	ctx.JSON(200, gin.H{"hospitals": hospitals})
 }
+
+func (h *HospitalHandler) DeleteByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(400, gin.H{"error": "Hospital ID is required"})
+		return
+	}
+
+	if err := h.service.DeleteByID(id); err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, gin.H{"message": "Hospital deleted successfully"})
+}

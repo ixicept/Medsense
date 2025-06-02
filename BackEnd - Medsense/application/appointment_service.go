@@ -115,3 +115,24 @@ func (s *AppointmentService) CompleteAppointment(ID string) error {
 
 	return s.appointmentRepo.Save(req)
 }
+
+func (s *AppointmentService) FindDoctorAppointmentsToday(doctorID string) ([]*appointment.AppointmentRequest, error) {
+
+	appointment, err := s.appointmentRepo.FindDoctorAppointmentToday(doctorID, time.Now().UTC())
+
+	if err != nil {
+		return nil, err // Error from repository
+	}
+
+	return appointment, nil
+}
+
+func (s *AppointmentService) FindPatientAppointmentsToday(patientID string) ([]*appointment.AppointmentRequest, error) {
+	appointment, err := s.appointmentRepo.FindPatientAppointmentToday(patientID, time.Now().UTC())
+
+	if err != nil {
+		return nil, err // Error from repository
+	}
+
+	return appointment, nil
+}

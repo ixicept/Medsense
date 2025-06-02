@@ -10,4 +10,6 @@ type AppointmentRepository interface {
 	FindByPatientID(patientID string, statusFilter []AppointmentStatus, offset int, limit int) (requests []*AppointmentRequest, totalCount int, err error)
 	FindByDoctorID(doctorID string, statusFilter []AppointmentStatus, offset int, limit int) (requests []*AppointmentRequest, totalCount int, err error)
 	FindByDoctorIDAndDateRange(doctorID string, startTime time.Time, endTime time.Time) ([]*AppointmentRequest, error)
+	FindDoctorAppointmentToday(doctorID string, date time.Time) ([]*AppointmentRequest, error)
+	FindPatientAppointmentToday(patientID string, date time.Time) ([]*AppointmentRequest, error)
 }
