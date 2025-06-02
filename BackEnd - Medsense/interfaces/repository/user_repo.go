@@ -81,3 +81,14 @@ func (r *UserRepository) FindByRole(role string, offset int, limit int) ([]auth.
 
 	return accounts, int(totalCount), nil
 }
+
+func (r *UserRepository) FindByDoctorID(doctorID string) (auth.Account, error) {
+	var account auth.Account
+	if err := r.db.Where("id = ? AND role = ?", doctorID, "doctor").First(&account).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return auth.Account{}, nil // No account found
+		}
+		return auth.Account{}, err // Other error
+	}
+	return account, nil
+}
