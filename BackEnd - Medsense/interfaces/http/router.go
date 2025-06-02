@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handler.ForumHandler, appointmentHandler handler.AppointmentHandler) *gin.Engine {
+func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handler.ForumHandler, appointmentHandler handler.AppointmentHandler, hospitalHandler handler.HospitalHandler) *gin.Engine {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
@@ -34,7 +34,12 @@ func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handle
 		api.GET("forum/posts", forumHandler.GetAllPosts)
 		api.GET("forum/posts/:postID", forumHandler.GetPostByID)
 		api.GET("forum/posts/:postID/replies", forumHandler.GetRepliesByPostID)
-		api.POST("appointment/request",appointmentHandler.RequestAppointment)
+
+		api.POST("appointment/request", appointmentHandler.RequestAppointment)
+
+		api.GET("hospital", hospitalHandler.GetAllHospitals)
+		api.POST("hospital", hospitalHandler.Save)
+		api.GET("hospital/:id", hospitalHandler.FindByID)
 		// protected := router.Group("/api")
 		// // protected.Use(authMiddleware(db))
 		// {

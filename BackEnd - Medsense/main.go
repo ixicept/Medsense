@@ -6,6 +6,7 @@ import (
 	"main/domain/appointment"
 	"main/domain/auth"
 	"main/domain/forum"
+	"main/domain/hospital"
 	"main/infrastructure"
 	interfaces "main/interfaces/http"
 	"main/interfaces/http/handler"
@@ -27,6 +28,7 @@ func main() {
 		&forum.ForumPost{},
 		&forum.ForumReply{},
 		&appointment.AppointmentRequest{},
+		&hospital.Hospital{},
 	)
 
 	validator := validator.New()
@@ -36,10 +38,12 @@ func main() {
 	regisRepo := repository.NewDoctorRegistrationRepository(db)
 	forumRepo := repository.NewForumRepository(db)
 	appointmentRepo := repository.NewAppointmentRepository(db)
+	hospitalRepo := repository.NewHospitalRepository(db)
 
 	authService := application.NewAuthService(authRepo, regisRepo)
 	forumService := application.NewForumService(forumRepo, validator)
 	appointmentService := application.NewAppointmentService(appointmentRepo, validator)
+	hospitalService := application.NewHospitalService(hospitalRepo, validator)
 	// authService := services.NewAuthService(secretKey)
 	// albumService := services.NewAlbumService(albumRepo, trackRepo, validator)
 	// artistService := services.NewArtistService(artistRepo, userRepo, validator)
@@ -49,13 +53,14 @@ func main() {
 	authHandler := handler.NewAuthHandler(authService)
 	forumHandler := handler.NewForumHandler(forumService)
 	appointmentHandler := handler.NewAppointmentHandler(appointmentService, authService)
+	hospitalHandler := handler.NewHospitalHandler(hospitalService)
 
 	// albumController := controllers.NewAlbumController(albumService)
 	// artistController := controllers.NewArtistController(artistService)
 	// verificationController := controllers.NewVerificationRequestController(verificationService)
 	// trackController := controllers.NewTrackController(trackService)
 
-	r := interfaces.NewRouter(db, *authHandler, *forumHandler, *appointmentHandler)
+	r := interfaces.NewRouter(db, *authHandler, *forumHandler, *appointmentHandler, *hospitalHandler)
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8080", "http://localhost:6379"},
