@@ -31,20 +31,7 @@ func (s *AppointmentService) RequestAppointment(req dto.CreateAppointmentDTO) er
 		return err
 	}
 
-	var appointment appointment.AppointmentRequest
-	appointment.ID = appointmentRequest.ID
-	appointment.PatientID = appointmentRequest.PatientID
-	appointment.DoctorID = appointmentRequest.DoctorID
-	appointment.RequestedDateTime = appointmentRequest.RequestedDateTime
-	appointment.Reason = appointmentRequest.Reason
-	appointment.PatientNotes = appointmentRequest.PatientNotes
-	appointment.Status = appointmentRequest.Status
-	appointment.CreatedAt = appointmentRequest.CreatedAt
-	appointment.UpdatedAt = appointmentRequest.UpdatedAt
-	appointment.ScheduledDateTime = appointmentRequest.ScheduledDateTime
-	appointment.DeclineReason = appointmentRequest.DeclineReason
-
-	return s.appointmentRepo.Save(appointment)
+	return s.appointmentRepo.Save(*appointmentRequest)
 }
 
 func (s *AppointmentService) FindAppointmentRequestByID(id string) (*appointment.AppointmentRequest, error) {

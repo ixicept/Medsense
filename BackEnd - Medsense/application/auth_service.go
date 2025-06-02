@@ -70,31 +70,37 @@ func (s *AuthService) FindByID(id string) (*auth.Account, error) {
 }
 
 func (s *AuthService) ApproveRegistration(id string, adminID string) error {
-	registration, err :=s.registrationRepo.FindByID(id)
-	if err != nil{
+	registration, err := s.registrationRepo.FindByID(id)
+	if err != nil {
 		return err
 	}
 	err = registration.Approve(adminID)
 	s.registrationRepo.CreateRegistration(registration)
 
+	var req = dto.CreateUserDTO{
+		Username:    registration.Username,
+		Email:       registration.Email,
+		Password:    registration.HashedPassword,
+		PhoneNumber: registration.PhoneNumber,
+		DateOfBirth: registration.DateOfBirth,
+		Location:    "Doctor Place",
+	}
 
-	var req =  dto.CreateUserDTO{Username: registration.Username, Email: registration.Email, Password: registration.HashedPassword, PhoneNumber: registration.PhoneNumber, DateOfBirth: registration.DateOfBirth, Location: "Doctor Place"}
 	s.CreateAccount(req)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-
 func (s *AuthService) DeclineRegistration(id string, adminID string) error {
-	registration, err :=s.registrationRepo.FindByID(id)
-	if err != nil{
+	registration, err := s.registrationRepo.FindByID(id)
+	if err != nil {
 		return err
 	}
 	err = registration.Reject(adminID)
 	s.registrationRepo.CreateRegistration(registration)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	return nil
