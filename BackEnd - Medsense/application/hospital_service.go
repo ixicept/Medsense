@@ -28,7 +28,6 @@ func (s *HospitalService) Save(req dto.CreateHospitalDTO) error {
 	if err != nil {
 		return err
 	}
-	hospitalEntity.ID = req.ID
 
 	return s.hospitalRepository.Save(hospitalEntity)
 }

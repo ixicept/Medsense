@@ -52,24 +52,37 @@ func (h *ScheduleHandler) FindByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, schedule)
 }
 
-func (h *ScheduleHandler) FindByDoctorID(ctx *gin.Context) {
-	doctorID := ctx.Param("doctorID")
-	if doctorID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Doctor ID is required"})
-		return
-	}
-
-	schedules, err := h.ScheduleService.FindByDoctorID(doctorID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	if len(schedules) == 0 {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "No schedules found for this doctor"})
-		return
-	}
-	ctx.JSON(http.StatusOK, schedules)
+func mapScheduleToResponse(s *doctorschedule.Schedule) *doctorschedule.Schedule {
+    return &doctorschedule.Schedule{
+        DoctorID:      s.DoctorID,
+        HospitalID:    s.HospitalID,
+        Day:           s.Day,
+        ScheduleStart: s.ScheduleStart.UTC(),
+        ScheduleEnd:   s.ScheduleEnd.UTC(),
+    }
 }
+
+func (h *ScheduleHandler) FindByDoctorID(ctx *gin.Context) {
+    doctorID := ctx.Param("doctorID")
+    if doctorID == "" {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Doctor ID is required"})
+        return
+    }
+
+    schedules, err := h.ScheduleService.FindByDoctorID(doctorID)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    var responses []*doctorschedule.Schedule
+    for _, s := range schedules {
+        responses = append(responses, mapScheduleToResponse(s))
+    }
+
+    ctx.JSON(http.StatusOK, responses)
+}
+
 
 func (h *ScheduleHandler) DeleteByID(ctx *gin.Context) {
 	id := ctx.Param("id")

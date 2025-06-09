@@ -74,3 +74,22 @@ export const getDoctors = async () => {
     throw error;
   }
 };
+
+export const getDoctorById = async (doctorId: string) => {
+  try {
+    const response = await axiosInstance.get(`/doctor/${doctorId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getDoctorSchedule = async (doctorId: string) => {
+  try {
+    const response = await axiosInstance.get(`/schedule/doctor/${doctorId}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

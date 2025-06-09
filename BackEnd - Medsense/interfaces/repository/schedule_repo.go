@@ -17,7 +17,7 @@ func NewScheduleRepository(db *gorm.DB) doctorschedule.ScheduleRepository {
 func (r *ScheduleRepository) Save(schedule *doctorschedule.Schedule) error {
 	var existingSchedule doctorschedule.Schedule
 
-	if err := r.db.Where("id = ?", schedule.ID).First(&existingSchedule).Error; err != nil {
+	if err := r.db.Where("doctor_id = ? AND day = ?", schedule.DoctorID, schedule.Day).First(&existingSchedule).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			if err := r.db.Create(schedule).Error; err != nil {
 				return err

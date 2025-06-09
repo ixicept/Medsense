@@ -23,12 +23,10 @@ func (s *ScheduleService) Save(req dto.CreateScheduleDTO) error {
 	if err := s.validate.Struct(req); err != nil {
 		return err
 	}
-
 	schedule, err := doctorschedule.NewSchedule(req)
 	if err != nil {
 		return err
 	}
-	schedule.ID = req.ID 
 	return s.scheduleRepository.Save(schedule)
 }
 

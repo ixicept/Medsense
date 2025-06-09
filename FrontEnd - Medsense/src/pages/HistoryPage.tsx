@@ -1,45 +1,87 @@
-import HistoryList from "../components/HistoryList"
-import { History, Filter } from "../components/Icons"
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../services/AxiosInstance";
+import { getCurrentUser } from "../utils/auth";
 
-export default function HistoryPage() {
+interface Appointment {
+  ID: string;
+  DoctorID: string;
+  RequestedDateTime: string;
+  Status: string;
+  Reason: string;
+}
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+export default function PatientHistoryPage() {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const user = getCurrentUser();
+
+  useEffect(() => {
+    if (!user?.id) return;
+    setLoading(true);
+    axiosInstance
+      .get(`/appointment/patient/${user.id}`)
+      .then((res) => {
+        setAppointments(
+          Array.isArray(res.data.requests) ? res.data.requests : []
+        );
+      })
+      .catch(() => setAppointments([]))
+      .finally(() => setLoading(false));
+  }, [user?.id]);
+
   return (
-    <>
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold tracking-tight text-sky-600">
-            Prediction History
-          </h2>
-          <p className="text-sky-700">View your past symptom analyses and predictions</p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="bg-sky-100 p-2 rounded-full text-sky-600">
-                <History className="h-5 w-5" />
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-6 text-sky-700">
+        My Appointment History
+      </h2>
+      {loading ? (
+        <div className="text-sky-500">Loading...</div>
+      ) : appointments.length === 0 ? (
+        <div className="text-gray-500">No appointments found.</div>
+      ) : (
+        <div className="space-y-4">
+          {appointments.map((a) => (
+            <div
+              key={a.ID}
+              className="border rounded-md p-4 bg-white shadow flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+            >
+              <div>
+                <div className="font-semibold text-sky-800">
+                  Doctor: {a.DoctorID}
+                </div>
+                <div className="text-gray-600 text-sm">
+                  Date: {formatDate(a.RequestedDateTime)}
+                </div>
+                <div className="text-gray-600 text-sm">
+                  Reason: {a.Reason || "-"}
+                </div>
               </div>
-              <h3 className="font-medium text-sky-800">Your Past Predictions</h3>
+              <div className="flex items-center gap-2">
+                <span
+                  className={
+                    "px-3 py-1 rounded-full text-sm font-semibold " +
+                    (a.Status === "approved"
+                      ? "bg-green-100 text-green-700"
+                      : a.Status === "declined"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700")
+                  }
+                >
+                  {a.Status.charAt(0).toUpperCase() + a.Status.slice(1)}
+                </span>
+              </div>
             </div>
-
-            <button className="flex items-center gap-1 text-sm text-sky-600 hover:text-sky-800">
-              <Filter className="h-4 w-4" />
-              <span>Filter</span>
-            </button>
-          </div>
-
-          <div className="border border-coral-200 rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gradient-card-3 border-b border-coral-100 px-6 py-4">
-              <h3 className="text-lg font-medium text-coral-700">Your History</h3>
-              <p className="text-sm text-gray-500">
-                A record of your previous symptom analyses and the predicted conditions
-              </p>
-            </div>
-            <div className="p-6">
-              <HistoryList />
-            </div>
-          </div>
+          ))}
         </div>
-      </div>
-    </>
-  )
+      )}
+    </div>
+  );
 }

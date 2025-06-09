@@ -31,7 +31,6 @@ func (s *AppointmentService) RequestAppointment(req dto.CreateAppointmentDTO) er
 		return err
 	}
 
-	appointmentRequest.ID = req.ID // Use the provided ID if it exists
 	return s.appointmentRepo.Save(*appointmentRequest)
 }
 
@@ -47,7 +46,7 @@ func (s *AppointmentService) FindAppointmentRequestByID(id string) (*appointment
 func (s *AppointmentService) FindAppointmentRequestsByPatientID(patientID string, statusFilter []appointment.AppointmentStatus, offset int, limit int) ([]*appointment.AppointmentRequest, int, error) {
 	requests, totalCount, err := s.appointmentRepo.FindByPatientID(patientID, statusFilter, offset, limit)
 	if err != nil {
-		return nil, 0, err // Error from repository
+		return nil, 0, err
 	}
 
 	return requests, totalCount, nil
@@ -56,7 +55,7 @@ func (s *AppointmentService) FindAppointmentRequestsByPatientID(patientID string
 func (s *AppointmentService) FindAppointmentRequestsByDoctorID(doctorID string, statusFilter []appointment.AppointmentStatus, offset int, limit int) ([]*appointment.AppointmentRequest, int, error) {
 	requests, totalCount, err := s.appointmentRepo.FindByDoctorID(doctorID, statusFilter, offset, limit)
 	if err != nil {
-		return nil, 0, err // Error from repository
+		return nil, 0, err
 	}
 
 	return requests, totalCount, nil
@@ -65,7 +64,7 @@ func (s *AppointmentService) FindAppointmentRequestsByDoctorID(doctorID string, 
 func (s *AppointmentService) ApproveAppointment(ID string) error {
 	req, err := s.appointmentRepo.FindByID(ID)
 	if err != nil {
-		return err // Error from repository
+		return err
 	}
 
 	if req.Status != appointment.StatusPending {

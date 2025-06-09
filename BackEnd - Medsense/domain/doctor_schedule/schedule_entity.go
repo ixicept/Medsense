@@ -3,15 +3,12 @@ package doctorschedule
 import (
 	"main/application/dto"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Schedule struct {
-	ID            string
-	DoctorID      string
+	DoctorID      string `gorm:"primaryKey"`	
 	HospitalID    string
-	Day           string
+	Day           string `gorm:"primaryKey"`
 	ScheduleStart time.Time
 	ScheduleEnd   time.Time
 	CreatedAt     time.Time
@@ -31,7 +28,6 @@ func NewSchedule(req dto.CreateScheduleDTO) (*Schedule, error) {
 
 	now := time.Now().UTC()
 	return &Schedule{
-		ID:            uuid.NewString(),
 		DoctorID:      req.DoctorID,
 		HospitalID:    req.HospitalID,
 		Day:           req.Day,

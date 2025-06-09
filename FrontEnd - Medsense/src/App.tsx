@@ -10,6 +10,9 @@ import RegisterPage from "./pages/RegisterPage";
 import DoctorRequestsPage from "./components/DoctorRequestPage";
 import ForumDetailPage from "./components/ForumDetailPage";
 import ForumPage from "./pages/ForumPage";
+import DoctorSchedulePage from "./pages/DoctorSchedulePage";
+import CreateHospitalPage from "./pages/CreateHospitalPage";
+import DoctorAppointmentPage from "./pages/DoctorAppointmentPage";
 
 function App() {
   const location = useLocation();
@@ -26,8 +29,14 @@ function App() {
         <Route path="/home-page" element={<HomePage />} />
         <Route path="/appointment" element={<AppointmentPage />} />
         <Route path="/history" element={<HistoryPage />} />
-        <Route path="/forum" element={<ForumPage />} /> {/* Add this route */}
+        <Route path="/forum" element={<ForumPage />} />
         <Route path="/forum/:id" element={<ForumDetailPage />} />
+        <Route path="/doctor-profile/:id" element={<DoctorSchedulePage />} />
+        <Route path="/hospital" element={<CreateHospitalPage />} />
+        <Route
+          path="/doctor-appointment/:id"
+          element={<DoctorAppointmentPage />}
+        />
       </Routes>
     </div>
   );

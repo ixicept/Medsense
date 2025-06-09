@@ -4,161 +4,283 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
 import { getCurrentUser } from "../utils/auth";
 
-interface DoctorRequest {
-  id: number;
-  user_id: number;
-  file_path: string;
-  status: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    phone_number: string;
-  };
+interface DoctorRegistration {
+  ID: string;
+  Username: string;
+  Email: string;
+  Role: string;
+  DateOfBirth: string;
+  PhoneNumber: string;
+  FileAttachment: string; // base64 string (bytea)
+  Status: string;
+  CreatedAt: string;
+  UpdatedAt: string;
 }
 
 export default function DoctorRequestsPage() {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
-  
-  const [requests, setRequests] = useState<DoctorRequest[]>([]);
+
+  const [requests, setRequests] = useState<DoctorRegistration[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewingFile, setViewingFile] = useState<string | null>(null);
-  
+
   useEffect(() => {
-    // Redirect non-admin users
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || currentUser.role !== "admin") {
       toast.error("You don't have permission to view this page");
-      navigate('/home-page');
+      navigate("/home-page");
       return;
     }
-    
     fetchDoctorRequests();
+    // eslint-disable-next-line
   }, []);
 
   const fetchDoctorRequests = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3001/doctor-requests");
-      setRequests(response.data);
+      const response = await axios.get(
+        "http://localhost:8080/api/doctor-registration"
+      );
+      setRequests(response.data.payload || []);
     } catch (error) {
       console.error("Error fetching doctor requests:", error);
-      toast.error("Failed to load doctor verification requests");
+      toast.error("Failed to load doctor registration requests");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApprove = async (requestId: number, userId: number) => {
-
-    console.log("req Id: ", requestId)
-    console.log("user Id: ", userId)
-
+  const handleApprove = async (id: string) => {
     try {
-      await axios.put(`http://localhost:3001/doctor-requests/${requestId}/approve`, { userId });
-      toast.success("Doctor application approved");
-      fetchDoctorRequests(); // Refresh the list
+      await axios.post(
+        "http://localhost:8080/api/doctor-registration/approve",
+        {
+          id: id,
+          admin_id: "lol",
+        }
+      );
+      toast.success("Doctor registration approved");
+      fetchDoctorRequests();
     } catch (error) {
       console.error("Error approving doctor:", error);
       toast.error("Failed to approve doctor");
     }
   };
 
-  const handleReject = async (requestId: number) => {
+  const handleReject = async (id: string) => {
     try {
-      await axios.put(`http://localhost:3001/doctor-requests/${requestId}/reject`);
-      toast.success("Doctor application rejected");
-      fetchDoctorRequests(); // Refresh the list
+      await axios.post(
+        "http://localhost:8080/api/doctor-registration/decline",
+        {
+          id: id,
+          admin_id: "lol",
+        }
+      );
+      toast.success("Doctor registration rejected");
+      fetchDoctorRequests();
     } catch (error) {
       console.error("Error rejecting doctor:", error);
       toast.error("Failed to reject doctor");
     }
   };
 
-  const viewFile = (filePath: string) => {
-    setViewingFile(`http://localhost:3001/uploads/${filePath.split('/').pop()}`);
+  // Download the base64-encoded PDF file
+  const handleDownload = (fileBase64: string, username: string) => {
+    const byteCharacters = atob(fileBase64);
+    const byteNumbers = Array.from(byteCharacters, (c) => c.charCodeAt(0));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${username}_credentials.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    window.URL.revokeObjectURL(url);
+    link.remove();
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <style>
+        {`
+        .pretty-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.28em;
+          border: none;
+          font-weight: 600;
+          font-size: 0.93em;
+          border-radius: 999px;
+          padding: 0.32em 0.68em;
+          margin: 0 0.07em;
+          min-width: unset;
+          box-shadow: 0 1.5px 6px rgba(32, 95, 199, 0.06);
+          transition: transform 0.11s, box-shadow 0.16s, background 0.12s;
+          cursor: pointer;
+          outline: none;
+          line-height: 1.3;
+        }
+        .btn-download {
+          background: #edf5ff;
+          color: #1976d2;
+        }
+        .btn-download:hover {
+          background: #d6e8fd;
+          transform: translateY(-0.5px) scale(1.025);
+          box-shadow: 0 2.5px 12px #1976d220;
+        }
+        .btn-accept {
+          background: #e7faef;
+          color: #21936b;
+        }
+        .btn-accept:hover {
+          background: #cef5df;
+          transform: translateY(-0.5px) scale(1.025);
+          box-shadow: 0 2.5px 12px #1eb9781a;
+        }
+        .btn-reject {
+          background: #fdeaea;
+          color: #c82437;
+        }
+        .btn-reject:hover {
+          background: #ffd2d6;
+          transform: translateY(-0.5px) scale(1.025);
+          box-shadow: 0 2.5px 12px #c8243720;
+        }
+        .doc-card-btns {
+          display: flex;
+          flex-direction: row;
+          gap: 0.4em;
+          margin-top: 0.6em;
+        }
+        @media (max-width: 768px) {
+          .doc-card-btns { flex-direction: column; gap: 0.25em; }
+        }
+        `}
+      </style>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-sky-800">Doctor Verification Requests</h1>
+        <h1 className="text-2xl font-bold text-sky-800">
+          Doctor Registration Requests
+        </h1>
         <div className="text-sm text-gray-500">
-          Displaying {requests.length} pending {requests.length === 1 ? 'request' : 'requests'}
+          Displaying {requests.length} pending{" "}
+          {requests.length === 1 ? "request" : "requests"}
         </div>
       </div>
 
       {loading ? (
         <div className="flex justify-center items-center h-60">
-          <svg className="animate-spin h-8 w-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <svg
+            className="animate-spin h-8 w-8 text-sky-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
           </svg>
         </div>
       ) : requests.length === 0 ? (
         <div className="bg-white rounded-lg p-8 text-center shadow-md">
-          <p className="text-gray-500">No pending doctor verification requests</p>
+          <p className="text-gray-500">
+            No pending doctor registration requests
+          </p>
         </div>
       ) : (
         <div className="grid gap-6">
           {requests.map((request) => (
-            <div key={request.id} className="bg-white rounded-lg p-6 shadow-md">
+            <div
+              key={request.ID}
+              className="bg-white rounded-lg p-6 shadow-md"
+              style={{ width: "70vw", margin: "0 auto" }}
+            >
               <div className="flex flex-col md:flex-row justify-between">
-                <div className="mb-4 md:mb-0">
-                  <h3 className="font-semibold text-lg text-sky-700">{request.user.name}</h3>
-                  <p className="text-gray-600">{request.user.email}</p>
-                  <p className="text-gray-600">{request.user.phone_number}</p>
-                  {/* <p className="mt-2 text-sm text-gray-500">
-                    Submitted: {new Date(request.created_at).toLocaleDateString()}
-                  </p> */}
+                <div className="mb-3 md:mb-0">
+                  <h3 className="font-semibold text-lg text-sky-700">
+                    {request.Username}
+                  </h3>
+                  <p className="text-gray-600">{request.Email}</p>
+                  <p className="text-gray-600">{request.PhoneNumber}</p>
+                  <p className="text-gray-600">
+                    Date of Birth: {request.DateOfBirth}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Submitted: {new Date(request.CreatedAt).toLocaleString()}
+                  </p>
                 </div>
-                <div className="flex flex-col md:flex-row gap-3">
+                <div className="doc-card-btns md:items-start items-stretch justify-end">
                   <button
-                    onClick={() => viewFile(request.file_path)}
-                    className="px-4 py-2 bg-sky-100 text-sky-600 rounded-md hover:bg-sky-200 transition-colors"
+                    onClick={() =>
+                      handleDownload(request.FileAttachment, request.Username)
+                    }
+                    className="pretty-btn btn-download"
                   >
-                    View Credentials
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                      <path
+                        d="M10 3v10m0 0l-4-4m4 4l4-4"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <rect
+                        x="4"
+                        y="15"
+                        width="12"
+                        height="2"
+                        rx="1"
+                        fill="currentColor"
+                        opacity="0.12"
+                      />
+                    </svg>
+                    Download
                   </button>
                   <button
-                    onClick={() => handleApprove(request.id, request.user_id)}
-                    className="px-4 py-2 bg-emerald-100 text-emerald-600 rounded-md hover:bg-emerald-200 transition-colors"
+                    onClick={() => handleApprove(request.ID)}
+                    className="pretty-btn btn-accept"
                   >
-                    Approve
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                      <path
+                        d="M6 10l3 3 5-5"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Accept
                   </button>
                   <button
-                    onClick={() => handleReject(request.id)}
-                    className="px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-colors"
+                    onClick={() => handleReject(request.ID)}
+                    className="pretty-btn btn-reject"
                   >
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                      <path
+                        d="M6 6l8 8M6 14L14 6"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                     Reject
                   </button>
                 </div>
               </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* File viewer modal */}
-      {viewingFile && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[80vh] overflow-auto">
-            <div className="p-4 border-b flex justify-between items-center">
-              <h3 className="font-medium">Doctor Credentials</h3>
-              <button onClick={() => setViewingFile(null)} className="text-gray-500 hover:text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-            <div className="p-6">
-              {viewingFile.endsWith('.pdf') ? (
-                <iframe src={viewingFile} className="w-full h-[60vh]" />
-              ) : (
-                <img src={viewingFile} alt="Doctor credentials" className="max-w-full h-auto" />
-              )}
-            </div>
-          </div>
         </div>
       )}
     </div>

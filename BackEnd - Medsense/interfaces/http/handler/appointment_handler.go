@@ -103,14 +103,16 @@ func (h *AppointmentHandler) FindAppointmentRequestsByDoctorID(ctx *gin.Context)
 
 	ctx.JSON(200, gin.H{"requests": requests, "total_count": totalCount})
 }
-
+type ApproveAppointmentRequest struct {
+	AppointmentID string `json:"appointment_id" binding:"required"`
+}	
 func (h *AppointmentHandler) ApproveAppointment(ctx *gin.Context) {
-	req := ctx.Param("appointmentID")
-	if req == "" {
-		ctx.JSON(400, gin.H{"error": "Appointment ID is required"})
-		return
-	}
-	if err := h.AppointmentService.ApproveAppointment(req); err != nil {
+	var req ApproveAppointmentRequest
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(400, gin.H{"error": err.Error()})
+        return
+    }
+	if err := h.AppointmentService.ApproveAppointment(req.AppointmentID); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
@@ -118,12 +120,12 @@ func (h *AppointmentHandler) ApproveAppointment(ctx *gin.Context) {
 }
 
 func (h *AppointmentHandler) RejectAppointment(ctx *gin.Context) {
-	req := ctx.Param("appointmentID")
-	if req == "" {
-		ctx.JSON(400, gin.H{"error": "Appointment ID is required"})
-		return
-	}
-	if err := h.AppointmentService.RejectAppointment(req); err != nil {
+	var req ApproveAppointmentRequest
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(400, gin.H{"error": err.Error()})
+        return
+    }
+	if err := h.AppointmentService.RejectAppointment(req.AppointmentID); err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}

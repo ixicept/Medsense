@@ -52,7 +52,7 @@ func NewRouter(db *gorm.DB, authHandler handler.AuthHandler, forumHandler handle
 
 		api.POST("schedule", scheduleHandler.Save)
 		api.GET("schedule/:id", scheduleHandler.FindByID)
-		api.GET("schedule/:doctorID", scheduleHandler.FindByDoctorID)
+		api.GET("schedule/doctor/:doctorID", scheduleHandler.FindByDoctorID)
 		api.DELETE("schedule/:id", scheduleHandler.DeleteByID)
 
 		// protected := router.Group("/api")

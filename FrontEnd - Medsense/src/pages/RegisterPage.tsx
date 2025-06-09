@@ -1,43 +1,51 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import React, { useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { DocumentUpload } from "../components/DocumentUpload";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css"; // Make sure this is imported
+import "react-datepicker/dist/react-datepicker.css";
 import { Calendar } from "../components/Icons";
 import { register, registerDoctor } from "../services/AuthService";
 
 export default function RegisterPage() {
-  const nav = useNavigate();
   const [activeTab, setActiveTab] = useState<"patient" | "doctor">("patient");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Common form fields
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
     phone_number: "",
-    // Patient-specific
     location: "",
-    // Doctor-specific
     file_attachment: null as File | null,
   });
-  
-  // Handle date separately to avoid type issues
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
-
-  // Form validation
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Helper to clear all form fields
+  const clearForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      phone_number: "",
+      location: "",
+      file_attachment: null,
+    });
+    setDateOfBirth(null);
+    setErrors({});
+    // Reset file input DOM value
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    // Clear error for this field when user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -46,8 +54,6 @@ export default function RegisterPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFormData((prev) => ({ ...prev, file_attachment: e.target.files![0] }));
-      
-      // Clear error when a file is selected
       if (errors.file_attachment) {
         setErrors((prev) => ({ ...prev, file_attachment: "" }));
       }
@@ -56,85 +62,67 @@ export default function RegisterPage() {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-
-    // Validate common fields
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
-    
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Email is invalid";
     if (!formData.password) newErrors.password = "Password is required";
-    else if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
-    
-    if (formData.password !== formData.confirmPassword) 
+    else if (formData.password.length < 6)
+      newErrors.password = "Password must be at least 6 characters";
+    if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords don't match";
-    
-    if (!formData.phone_number) newErrors.phone_number = "Phone number is required";
-    
-    // Validate date of birth
+    if (!formData.phone_number)
+      newErrors.phone_number = "Phone number is required";
     if (!dateOfBirth) newErrors.dateOfBirth = "Date of birth is required";
-    
-    // Validate tab-specific fields
-    if (activeTab === "patient" && !formData.location.trim()) 
+    if (activeTab === "patient" && !formData.location.trim())
       newErrors.location = "Location is required";
-    
-    if (activeTab === "doctor" && !formData.file_attachment) 
+    if (activeTab === "doctor" && !formData.file_attachment)
       newErrors.file_attachment = "Medical license/credentials are required";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
     setIsSubmitting(true);
-
     try {
       const apiFormData = new FormData();
       apiFormData.append("name", formData.name);
       apiFormData.append("email", formData.email);
       apiFormData.append("password", formData.password);
-      apiFormData.append("role", activeTab === "doctor" ? "pending_doctor" : "patient");
+      apiFormData.append(
+        "role",
+        activeTab === "doctor" ? "pending_doctor" : "patient"
+      );
       apiFormData.append("phone_number", formData.phone_number);
-      
-      // Add date of birth
       if (dateOfBirth) {
-        apiFormData.append("date_of_birth", dateOfBirth.toISOString().split('T')[0]);
+        apiFormData.append(
+          "date_of_birth",
+          dateOfBirth.toISOString().split("T")[0]
+        );
       }
-      
       if (activeTab === "patient") {
         apiFormData.append("location", formData.location);
       }
-      
       if (activeTab === "doctor" && formData.file_attachment) {
         apiFormData.append("file_attachment", formData.file_attachment);
       }
-
-      // Send to backend - make sure to send the FormData properly
-    //   const response = await axios.post("http://localhost:3001/register", { body: apiFormData
-    //   });
-
-    if (activeTab === "doctor") {
-      const response = await registerDoctor(apiFormData);
-      if (response.data) {
-        toast.success("Registration submitted! An admin will review your application.");
-        nav("/");
+      if (activeTab === "doctor") {
+        const response = await registerDoctor(apiFormData);
+        if (response) {
+          clearForm();
+          toast.success(
+            "Doctor registration submitted! An admin will review your application."
+          );
+        }
+      } else if (activeTab === "patient") {
+        const response = await register(apiFormData);
+        if (response) {
+          clearForm();
+          toast.success("Registration successful! You can now log in.");
+        }
       }
-    }
-    else if (activeTab === "patient") {
-      const response = await register(apiFormData);
-
-      console.log("Res: ", response)
-
-      if (response) {
-        toast.success("Registration successful! You can now log in.");
-        nav("/");
-      }
-    
-    }
-      
     } catch (error) {
       console.error("Registration error:", error);
       toast.error("Registration failed. Please try again.");
@@ -149,7 +137,6 @@ export default function RegisterPage() {
         <h1 className="text-2xl font-bold text-center text-sky-600 mb-6">
           Create Your Account
         </h1>
-
         {/* Tab selector */}
         <div className="flex border-b border-gray-200 mb-6">
           <button
@@ -175,7 +162,6 @@ export default function RegisterPage() {
             Register as Doctor
           </button>
         </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Common fields */}
           <div>
@@ -200,7 +186,6 @@ export default function RegisterPage() {
               <p className="mt-1 text-xs text-red-600">{errors.name}</p>
             )}
           </div>
-
           <div>
             <label
               htmlFor="email"
@@ -223,7 +208,6 @@ export default function RegisterPage() {
               <p className="mt-1 text-xs text-red-600">{errors.email}</p>
             )}
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label
@@ -247,7 +231,6 @@ export default function RegisterPage() {
                 <p className="mt-1 text-xs text-red-600">{errors.password}</p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor="confirmPassword"
@@ -273,7 +256,6 @@ export default function RegisterPage() {
               )}
             </div>
           </div>
-
           <div>
             <label
               htmlFor="phone_number"
@@ -296,8 +278,7 @@ export default function RegisterPage() {
               <p className="mt-1 text-xs text-red-600">{errors.phone_number}</p>
             )}
           </div>
-
-          {/* Date of Birth field - fixed implementation */}
+          {/* Date of Birth field */}
           <div>
             <label
               htmlFor="dateOfBirth"
@@ -310,15 +291,12 @@ export default function RegisterPage() {
                 selected={dateOfBirth}
                 onChange={(date: Date | null) => {
                   setDateOfBirth(date);
-                  if (date) {
-                    // Clear error when date is selected
-                    if (errors.dateOfBirth) {
-                      setErrors((prev) => ({ ...prev, dateOfBirth: "" }));
-                    }
+                  if (date && errors.dateOfBirth) {
+                    setErrors((prev) => ({ ...prev, dateOfBirth: "" }));
                   }
                 }}
                 dateFormat="MMMM d, yyyy"
-                maxDate={new Date()} // Can't select future dates
+                maxDate={new Date()}
                 showYearDropdown
                 dropdownMode="select"
                 yearDropdownItemNumber={100}
@@ -336,8 +314,6 @@ export default function RegisterPage() {
               <p className="mt-1 text-xs text-red-600">{errors.dateOfBirth}</p>
             )}
           </div>
-
-          {/* Conditional fields based on active tab */}
           {activeTab === "patient" && (
             <div>
               <label
@@ -362,7 +338,6 @@ export default function RegisterPage() {
               )}
             </div>
           )}
-
           {activeTab === "doctor" && (
             <div>
               <label
@@ -379,6 +354,7 @@ export default function RegisterPage() {
                 }`}
               >
                 <input
+                  ref={fileInputRef}
                   type="file"
                   id="file_attachment"
                   name="file_attachment"
@@ -410,12 +386,11 @@ export default function RegisterPage() {
                 </p>
               )}
               <p className="mt-2 text-xs text-gray-500">
-                Note: Your application will be reviewed by an administrator before
-                you can practice as a doctor on our platform.
+                Note: Your application will be reviewed by an administrator
+                before you can practice as a doctor on our platform.
               </p>
             </div>
           )}
-
           <button
             type="submit"
             disabled={isSubmitting}
@@ -428,17 +403,6 @@ export default function RegisterPage() {
               : "Create Account"}
           </button>
         </form>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Already have an account?{" "}
-          <button
-            onClick={() => nav("/")}
-            className="text-sky-500 hover:text-sky-400 font-medium"
-            type="button"
-          >
-            Log in
-          </button>
-        </div>
       </div>
     </div>
   );
