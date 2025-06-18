@@ -104,6 +104,7 @@ export default function RegisterPage() {
       }
       if (activeTab === "patient") {
         apiFormData.append("location", formData.location);
+        apiFormData.append("role", "patient");
       }
       if (activeTab === "doctor" && formData.file_attachment) {
         apiFormData.append("file_attachment", formData.file_attachment);

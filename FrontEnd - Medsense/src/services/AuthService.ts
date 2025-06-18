@@ -23,6 +23,8 @@ export const register = async (form: FormData) => {
       phone_number: form.get("phone_number"),
       date_of_birth: form.get("date_of_birth"),
       location: form.get("location"),
+      role: form.get("role")
+
     };
     const response = await axiosInstance.post(
       "/auth/register-patient",

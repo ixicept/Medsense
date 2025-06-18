@@ -84,6 +84,7 @@ func (s *AuthService) ApproveRegistration(id string, adminID string) error {
 		PhoneNumber: registration.PhoneNumber,
 		DateOfBirth: registration.DateOfBirth,
 		Location:    "Doctor Place",
+		Role: "doctor",
 	}
 
 	s.CreateAccount(req)

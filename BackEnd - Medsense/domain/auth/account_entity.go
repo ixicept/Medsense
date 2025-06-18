@@ -39,7 +39,7 @@ func NewAccount(req dto.CreateUserDTO) (*Account, error) {
 		ID:             uuid.NewString(),
 		Email:          req.Email,
 		HashedPassword: string(hashedPass),
-		Role:           "patient",
+		Role:           req.Role,
 		DateOfBirth:    req.DateOfBirth,
 		PhoneNumber:    req.PhoneNumber,
 		Location:       req.Location,

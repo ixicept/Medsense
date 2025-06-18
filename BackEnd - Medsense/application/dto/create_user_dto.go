@@ -7,4 +7,5 @@ type CreateUserDTO struct {
 	PhoneNumber string `json:"phone_number"`
 	DateOfBirth string `json:"date_of_birth"`
 	Location    string `json:"location"`
+	Role        string `json:"role"`
 }

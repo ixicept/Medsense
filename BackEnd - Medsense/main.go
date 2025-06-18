@@ -68,7 +68,7 @@ func main() {
 	r := interfaces.NewRouter(db, *authHandler, *forumHandler, *appointmentHandler, *hospitalHandler, *scheduleHandler)
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8080", "http://localhost:6379"},
+		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:6379"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

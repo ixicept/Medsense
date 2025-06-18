@@ -8,13 +8,14 @@ interface Appointment {
   PatientID: string;
   Reason: string;
   Status: string;
-  ScheduledDateTime: string;
+  RequestedDateTime: string;
 }
 
 export default function DoctorAppointmentPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState<string | null>(null); // appointment id
+  const [processing, setProcessing] = useState<string | null>(null);
+  const [patientNames, setPatientNames] = useState<Record<string, string>>({});
   const user = getCurrentUser();
   const doctorId = user?.id;
 
@@ -23,17 +24,35 @@ export default function DoctorAppointmentPage() {
     setLoading(true);
     axiosInstance
       .get(`/appointment/doctor/${doctorId}`)
-      .then((res) => {
-        console.log("test2: ", res.data);
-        setAppointments(
-          Array.isArray(res.data.requests) ? res.data.requests : []
+      .then(async (res) => {
+        const appts = Array.isArray(res.data.requests) ? res.data.requests : [];
+        setAppointments(appts);
+
+        const uniquePatientIds: string[] = [
+          ...new Set(appts.map((a: Appointment) => a.PatientID)),
+        ].filter((id): id is string => !!id && !(id in patientNames));
+
+        const fetches = uniquePatientIds.map((pid) =>
+          axiosInstance.get(`/doctor/${pid}`).then(
+            (r) => [pid, r.data.name],
+            () => [pid, "Unknown"]
+          )
+        );
+        const results = await Promise.all(fetches);
+        setPatientNames((prev) =>
+          results.reduce(
+            (acc, [pid, name]) => {
+              acc[pid] = name;
+              return acc;
+            },
+            { ...prev }
+          )
         );
       })
       .catch(() => toast.error("Failed to fetch appointments"))
       .finally(() => setLoading(false));
   }, [doctorId]);
   console.log("test: ", appointments);
-  // Approve/Reject handler
   const handleAction = async (
     appointmentId: string,
     action: "approve" | "decline"
@@ -92,10 +111,10 @@ export default function DoctorAppointmentPage() {
             >
               <div className="flex-1">
                 <div className="font-semibold text-lg mb-1">
-                  {appt.PatientID}
+                  {patientNames[appt.PatientID] || appt.PatientID}
                 </div>
                 <div className="text-sm text-gray-700">
-                  Requested: {formatTime(appt.ScheduledDateTime)}
+                  Requested: {formatTime(appt.RequestedDateTime)}
                 </div>
                 <div className="text-sm text-gray-700 mb-2">
                   Reason: {appt.Reason}
